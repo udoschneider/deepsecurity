@@ -7,6 +7,8 @@ module DeepSecurity
 # This class represents the DeepSecurity Manager. It's the entry point for all further actions
   class Manager
 
+    attr_reader :session_id
+
     private
 
     # Obtain a new wrapper around the DeepSecurity Manager SOAP API.

@@ -21,8 +21,9 @@ require "deepsecurity/objects/host_group"
 require "deepsecurity/objects/host"
 require "deepsecurity/objects/host_filter"
 require "deepsecurity/objects/host_detail"
+require "deepsecurity/objects/security_profile"
 
-require "deepsecurity/objects/private/private_vulnerability"
+require "deepsecurity/objects/private/vulnerability"
 
 
 Savon.configure do |config|
@@ -34,6 +35,9 @@ end
 HTTPI.log = false # disable logging
                   # HTTPI.logger    = MyLogger  # change the logger
                   # HTTPI.log_level = :info     # change the log level
+
+HTTPI.adapter=:net_http
+
 
                   # This modules encapsulates the DeepSecurity WebAPI with a Ruby Wrapper
 
