@@ -13,6 +13,18 @@ module DeepSecurity
 
     cache_by_aspect :id, :name
 
+    def overridden_dpi_rule_identifiers
+      @dsm.overridden_dpi_rule_identifiers_for_host(@id)
+    end
+
+    def overridden_dpi_rules
+      dpi_rules = Hash.new()
+      @dsm.dpi_rules.each { |rule| dpi_rules[rule.identifier]=rule }
+      overridden_dpi_rule_identifiers.map do |rule_identifier|
+        dpi_rules[rule_identifier]
+      end
+    end
+
   end
 
   class Manager
@@ -32,6 +44,16 @@ module DeepSecurity
     def host_by_name(name)
       cache.fetch(Host.cache_key(:name, name)) do
         request_object("host_retrieve_by_name", Host, {:name => name})
+      end
+    end
+
+    def security_profile
+      @dsm.security_progile(@security_profile_id)
+    end
+
+    def overridden_dpi_rule_identifiers_for_host(id)
+      payload_filters(:hostID => id, :arguments => 16).map do |hash|
+        hash[:name].split(' ').first
       end
     end
 

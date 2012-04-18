@@ -179,7 +179,9 @@ module DeepSecurity
         end
         if type[:type] == :array
           element_type = type[:element_type]
-          return value[:item].collect { |item| type_value_for_ivar(element_type, ivar_name, item) }
+          item = value[:item]
+          return item.collect { |each| type_value_for_ivar(element_type, ivar_name, each) } if item.kind_of?(Array)
+          return [ type_value_for_ivar(element_type, ivar_name, item) ]
         end
       end
       raise_type_mapping_not_defined(ivar_name, type, value)

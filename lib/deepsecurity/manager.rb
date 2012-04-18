@@ -117,5 +117,78 @@ module DeepSecurity
       end
     end
 
+    def clean_html_string(string)
+      string.
+          inner_text.
+          gsub(/\s+/, " ").
+          strip
+    end
+
+    def symbolize_header(string)
+      string.
+          gsub(/::/, '/').
+          gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').
+          gsub(/([a-z\d])([A-Z])/, '\1_\2').
+          gsub(/\s+/, "_").
+          tr("-", "_").
+          downcase.
+          to_sym
+    end
+
+    def payload_filters(optional_parameters = {})
+
+      rules_per_page = nil
+      rules = []
+      while rules.empty? || (rules.count%rules_per_page == 0)
+
+        mainTableViewState = ["",
+                              "controlCheck,after=[NONE]",
+                              "icon,after=controlCheck",
+                              "summaryConnectionType,after=icon",
+                              "fullName,after=summaryConnectionType",
+                              "summaryPriority,after=fullName",
+                              "summarySeverityHTML,after=summaryPriority",
+                              "summaryMode,after=summarySeverityHTML",
+                              "summaryType,after=summaryMode",
+                              "summaryCVE,after=summaryType",
+                              "summarySECUNIA,after=summaryCVE",
+                              "summaryBUGTRAQ,after=summarySECUNIA",
+                              "summaryMS,after=summaryBUGTRAQ",
+                              "summaryCvssScore,after=summaryMS",
+                              "summaryIssued,after=summaryCvssScore"]
+
+        parameters = {
+            :paging_offset => rules.count,
+            :mainTable_viewstate => URI.escape(mainTableViewState.join('|'))
+        }
+        parameters_string = (parameters.merge(optional_parameters).map { |k, v| "#{k}=#{v}"}).join("&")
+
+        path = "/PayloadFilter2s.screen?#{parameters_string}"
+        body = send_authenticated_http_get(path)
+        doc = Hpricot(body)
+
+        column_mapping = Hash.new()
+        doc.
+            search("#mainTable_header_table td:not(.datatable_resizer)").
+            map { |each| clean_html_string(each)[0..-2] }.
+            each_with_index { |each, index| column_mapping[each]=index unless each.blank? }
+
+        doc.search("#mainTable_rows_table tr") do |row|
+          column_cells = row.
+              search("td").
+              map { |each| clean_html_string(each) }
+          rule = Hash.new()
+          column_mapping.each do |k, v|
+            rule[symbolize_header(k)]=column_cells[v]
+          end
+          rules.push(rule)
+        end
+        rules_per_page = rules.count if rules_per_page.nil?
+      end
+      rules
+
+
+    end
+
   end
 end

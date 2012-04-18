@@ -2,18 +2,18 @@ module DeepSecurity
 
   # An object that holds detailed information about one computer object. All the "overall" fields are fields created by
   # merging states of potentially multiple endpoints (i.e., Agent + Appliance).
-  class HostDetail < DSMObject
+  class HostDetail < Host
 
-    attr_integer_accessor :id
-    attr_string_accessor :description,
-                         :name,
-                         :display_name
-    attr_boolean_accessor :external
-    attr_string_accessor :external_id
-    attr_integer_accessor :host_group_id
-    attr_enum_accessor EnumHostType, :host_type
-    attr_string_accessor :platform
-    attr_integer_accessor :security_profile_id
+    # attr_integer_accessor :id
+    # attr_string_accessor :description,
+    #                      :name,
+    #                      :display_name
+    # attr_boolean_accessor :external
+    # attr_string_accessor :external_id
+    # attr_integer_accessor :host_group_id
+    # attr_enum_accessor EnumHostType, :host_type
+    # attr_string_accessor :platform
+    # attr_integer_accessor :security_profile_id
     attr_string_accessor :anti_malware_classic_pattern_version,
                          :anti_malware_engine_version,
                          :anti_malware_intelli_trap_exception_version,
@@ -53,7 +53,7 @@ module DeepSecurity
     array_string_accessor :component_versions
 
 
-    cache_by_aspect :id, :name
+    # cache_by_aspect :id, :name
 
   end
 
