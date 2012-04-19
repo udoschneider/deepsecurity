@@ -62,7 +62,7 @@ module DeepSecurity
   class Manager
 
     def host_detail_retrieve(host_filter, detail_level)
-      cache.fetch(DPIRule.cache_key(:all, :all)) do
+      cache.fetch(HostDetail.cache_key(:all, :all)) do
         request_array("host_detail_retrieve", HostDetail, {
             :host_filter => host_filter.as_hash,
             :host_detail_level => EnumHostDetailLevel.key(detail_level)
