@@ -139,7 +139,7 @@ module DeepSecurity
 
       rules_per_page = nil
       rules = []
-      while rules.empty? || (rules.count%rules_per_page == 0)
+      while rules_per_page.nil? || rules_per_page > 0
 
         mainTableViewState = ["",
                               "controlCheck,after=[NONE]",
@@ -173,6 +173,7 @@ module DeepSecurity
             map { |each| clean_html_string(each)[0..-2] }.
             each_with_index { |each, index| column_mapping[each]=index unless each.blank? }
 
+        rules_per_page = 0
         doc.search("#mainTable_rows_table tr") do |row|
           column_cells = row.
               search("td").
@@ -182,8 +183,8 @@ module DeepSecurity
             rule[symbolize_header(k)]=column_cells[v]
           end
           rules.push(rule)
+          rules_per_page = rules_per_page + 1
         end
-        rules_per_page = rules.count if rules_per_page.nil?
       end
       rules
 
