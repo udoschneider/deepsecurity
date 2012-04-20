@@ -1,13 +1,14 @@
 require "savon"
 require "httpi"
 require "colorize"
+require "logger"
 
 module DeepSecurity
 
 # This class represents the DeepSecurity Manager. It's the entry point for all further actions
   class Manager
 
-    attr_reader :session_id
+    attr_reader :session_id, :logger
 
     private
 
@@ -25,7 +26,7 @@ module DeepSecurity
     # Send a Request to the SOAP API for method +method_name+ with the data in +soap_body+ and unwrap the response
     def send_request(method_name, soap_body = {}) #:doc:
       retryable(:tries => 5, :on => Errno::ECONNRESET) do
-        puts "#{self.class}\##{__method__}(#{method_name.inspect}, #{soap_body.inspect})".colorize(:blue)
+        logger.debug { "#{self.class}\##{__method__}(#{method_name.inspect}, #{soap_body.inspect})" }
         begin
           response = @client.request method_name do
             soap.body = soap_body
@@ -39,7 +40,7 @@ module DeepSecurity
 
     # Send an authenticated Request to the SOAP API for method +method_name+ with the data in +soap_body+ and unwrap the response
     def send_authenticated_request(method_name, soap_body={})
-      # puts "#{self.class}##{__method__}(#{method_name}, #{soap_body.to_s})"
+      logger.debug { "#{self.class}##{__method__}(#{method_name}, #{soap_body.to_s})" }
       raise AuthenticationRequiredException if !authenticated?
       authenticated_soap_body = soap_body
       soap_body[:sid] = @session_id
@@ -49,9 +50,17 @@ module DeepSecurity
 
     public
 
+    def logger
+      if @logger.nil?
+        @logger ||= Logger.new(STDOUT)
+        @logger.level = Logger::INFO
+      end
+      @logger
+    end
+
     # Send an authenticated Request to the Server for URL +url and return the response body
     def send_authenticated_http_get(path)
-      puts "#{self.class}\##{__method__}(#{path.inspect})".colorize(:blue)
+      logger.debug { "#{self.class}\##{__method__}(#{path.inspect})" }
       url = "https://#{@hostname}:4119#{path}"
       request = HTTPI::Request.new(url)
       request.auth.ssl.verify_mode = :none
@@ -60,6 +69,22 @@ module DeepSecurity
       }
       request.gzip
       response = HTTPI.get request
+      response.body
+    end
+
+    # Send an authenticated Request to the Server for URL +url and return the response body
+    def send_authenticated_http_post(path, body)
+      logger.debug { "#{self.class}\##{__method__}(#{path.inspect})" }
+      url = "https://#{@hostname}:4119#{path}"
+      request = HTTPI::Request.new(url)
+      request.auth.ssl.verify_mode = :none
+      request.headers = {
+          "Cookie" => "sID=#{@session_id}",
+          "Content-Type" => "application/x-www-form-urlencoded"
+      }
+      request.gzip
+      request.body = body
+      response = HTTPI.post request
       response.body
     end
 
@@ -135,11 +160,94 @@ module DeepSecurity
           to_sym
     end
 
+    def post_setting(action, parameters, settings)
+
+      parameters_string = URI.escape(parameters.map { |key, value| "#{key}=#{value}" }.join("&"))
+      path = "/#{action}?#{parameters_string}"
+      body = send_authenticated_http_get(path)
+
+      doc = Hpricot(body)
+      form_values = {}
+      doc.search("input").each do |input|
+        type = input["type"]
+        unless type == "button" || type == "submit"
+          form_values[input['name']] = input['value'] unless input['name'].blank?
+        end
+      end
+
+      form_values = form_values.merge(settings)
+
+      action = doc.search("form#mainForm").first["action"]
+      parameters_string = URI.encode_www_form(form_values)
+      path = "/#{action}"
+      send_authenticated_http_post(path, parameters_string)
+
+
+    end
+
+    def show_rules(host_id, type)
+      "GET /PayloadFilter2s.screen?hostID=2&noSearch=true&hideStandardHeader=true HTTP/1.1"
+      post_setting("PayloadFilter2s.screen", {"hostID" => host_id, "noSearch" => true, "hideStandardHeader" => true}, {"command" => "CHANGEASSIGNFILTER", "arguments" => type})
+    end
+
+
+    def enable_columns
+
+      action = "AddRemoveColumns.screen"
+      parameters = {
+          :screenSettingKey => "payloadFilter2s.",
+          :columnDisplayNames => [
+              # "payloadFilter2s.column.summaryDescription",
+              # "payloadFilter2s.column.summaryOriginallyIssued",
+              # "payloadFilter2s.column.schedule",
+              # "payloadFilter2s.column.disableLog",
+              # "payloadFilter2s.column.logPacketDrop",
+              # "payloadFilter2s.column.logPacketModify",
+              # "payloadFilter2s.column.includePacketData",
+              # "payloadFilter2s.column.ruleContext",
+              # "payloadFilter2s.column.alert",
+              # "payloadFilter2s.column.summaryRecommendable",
+              # "payloadFilter2s.column.summaryMinimumAgentVersion",
+              "payloadFilter2s.column.cve",
+              "payloadFilter2s.column.secunia",
+              "payloadFilter2s.column.bugtraq",
+              "payloadFilter2s.column.ms"
+          ].join(","),
+          :columnAdminSettingNames => [
+              # "summaryDescription",
+              # "summaryOriginallyIssued",
+              # "summarySchedule",
+              # "disableLogIcon",
+              # "logPacketDropIcon",
+              # "logPacketModifyIcon",
+              # "includePacketDataIcon",
+              # "summaryRuleContext",
+              # "alertIcon",
+              # "summaryRecommendable",
+              # "summaryMinimumAgentVersion",
+              "summaryCVE",
+              "summarySECUNIA",
+              "summaryBUGTRAQ",
+              "summaryMS"
+          ].join(",")
+      }
+      settings = {
+          "summaryCVE" => true,
+          "summarySECUNIA" => true,
+          "summaryBUGTRAQ" => true,
+          "summaryMS" => true
+      }
+
+      post_setting(action, parameters, settings)
+
+    end
+
     def payload_filters(optional_parameters = {})
 
-      rules_per_page = nil
+      num_rules = nil
       rules = []
-      while rules_per_page.nil? || rules_per_page > 0
+      column_mapping = Hash.new()
+      while num_rules.nil? || rules.count < num_rules
 
         mainTableViewState = ["",
                               "controlCheck,after=[NONE]",
@@ -158,22 +266,33 @@ module DeepSecurity
                               "summaryIssued,after=summaryCvssScore"]
 
         parameters = {
-            :paging_offset => rules.count,
-            :mainTable_viewstate => URI.escape(mainTableViewState.join('|'))
+            # :mainTable_viewstate => URI.escape(mainTableViewState.join('|')),
+            :paging_offset => rules.count
         }
-        parameters_string = (parameters.merge(optional_parameters).map { |k, v| "#{k}=#{v}"}).join("&")
+        parameters_string = (parameters.merge(optional_parameters).map { |k, v| "#{k}=#{v}" }).join("&")
 
         path = "/PayloadFilter2s.screen?#{parameters_string}"
         body = send_authenticated_http_get(path)
         doc = Hpricot(body)
 
-        column_mapping = Hash.new()
-        doc.
-            search("#mainTable_header_table td:not(.datatable_resizer)").
-            map { |each| clean_html_string(each)[0..-2] }.
-            each_with_index { |each, index| column_mapping[each]=index unless each.blank? }
+        if num_rules.nil?
+          num_rules = doc.search("td.paging_text").inner_text.split(/\s+/)[-1]
+          if !num_rules.nil?
+            num_rules = num_rules.scan(/\d/).join.to_i
+          else
+            num_rules = 0
+          end
+          # puts "num_rules #{num_rules}"
+        end
 
-        rules_per_page = 0
+
+        if column_mapping.empty?
+          doc.
+              search("#mainTable_header_table td:not(.datatable_resizer)").
+              map { |each| clean_html_string(each)[0..-2] }.
+              each_with_index { |each, index| column_mapping[each]=index unless each.blank? }
+        end
+
         doc.search("#mainTable_rows_table tr") do |row|
           column_cells = row.
               search("td").
@@ -183,7 +302,6 @@ module DeepSecurity
             rule[symbolize_header(k)]=column_cells[v]
           end
           rules.push(rule)
-          rules_per_page = rules_per_page + 1
         end
       end
       rules
