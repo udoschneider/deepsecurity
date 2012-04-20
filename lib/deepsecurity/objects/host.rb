@@ -17,7 +17,7 @@ module DeepSecurity
       @dsm.assigned_dpi_rule_identifiers_for_host(@id)
     end
 
-    def overridden_dpi_rules
+    def assigned_dpi_rules
       dpi_rules = Hash.new()
       @dsm.dpi_rules.each { |rule| dpi_rules[rule.identifier]=rule }
       assigned_dpi_rule_identifiers.map do |rule_identifier|
