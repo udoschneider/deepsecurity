@@ -17,7 +17,7 @@ test/version_tmp
 tmp
 sample.rb
 *.pdf
-.idea/
+.idea
 DS4R/
 dsm.der
 keystore

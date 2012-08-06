@@ -33,20 +33,6 @@ module DeepSecurity
       self.class.cache_aspects
     end
 
-    def self.array_integer_accessor(*symbols)
-      symbols.each do |each|
-        ivar_type_mapping[each] = {:type => :array, :element_type => :integer}
-        attr_accessor each
-      end
-    end
-
-    def self.array_string_accessor(*symbols)
-      symbols.each do |each|
-        ivar_type_mapping[each] = {:type => :array, :element_type => :string}
-        attr_accessor each
-      end
-    end
-
     def self.attr_boolean_accessor(*symbols)
       symbols.each do |each|
         ivar_type_mapping[each] = :boolean
@@ -82,6 +68,13 @@ module DeepSecurity
       end
     end
 
+    def self.array_integer_accessor(*symbols)
+      symbols.each do |each|
+        ivar_type_mapping[each] = {:type => :array, :element_type => :integer}
+        attr_accessor each
+      end
+    end
+
     def self.attr_ip_address_accessor(*symbols)
       self.attr_string_accessor(*symbols)
     end
@@ -93,9 +86,23 @@ module DeepSecurity
       end
     end
 
+    def self.array_object_accessor(object_class, *symbols)
+      symbols.each do |each|
+        ivar_type_mapping[each] = {:type => :class, :class => object_class}
+        attr_accessor each
+      end
+    end
+
     def self.attr_string_accessor(*symbols)
       symbols.each do |each|
         ivar_type_mapping[each] = :string
+        attr_accessor each
+      end
+    end
+
+    def self.array_string_accessor(*symbols)
+      symbols.each do |each|
+        ivar_type_mapping[each] = {:type => :array, :element_type => :string}
         attr_accessor each
       end
     end
@@ -181,7 +188,7 @@ module DeepSecurity
           element_type = type[:element_type]
           item = value[:item]
           return item.collect { |each| type_value_for_ivar(element_type, ivar_name, each) } if item.kind_of?(Array)
-          return [ type_value_for_ivar(element_type, ivar_name, item) ]
+          return [type_value_for_ivar(element_type, ivar_name, item)]
         end
       end
       raise_type_mapping_not_defined(ivar_name, type, value)
@@ -202,7 +209,7 @@ module DeepSecurity
       return nil if value.blank?
       return value.to_s if type == :integer
       return value.to_s if type == :float
-      return value.to_s if type == :datetime
+      return value.to_datetime.to_s if type == :datetime
       if type.class == Hash
         if type[:type] == :enum
           return_value = type[:enum].key(value)

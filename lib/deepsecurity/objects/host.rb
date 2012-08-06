@@ -13,16 +13,38 @@ module DeepSecurity
 
     cache_by_aspect :id, :name
 
+    def dpi_rules_from_identifiers(rule_identifiers)
+      dpi_rules = Hash.new()
+      @dsm.dpi_rules.each { |rule| dpi_rules[rule.identifier]=rule }
+      rule_identifiers.map { |rule_identifier| dpi_rules[rule_identifier] }
+    end
+
+    def all_dpi_rule_identifiers
+      @dsm.dpi_rule_identifiers_for_host(@id, 0)
+    end
+
     def assigned_dpi_rule_identifiers
-      @dsm.assigned_dpi_rule_identifiers_for_host(@id)
+      @dsm.dpi_rule_identifiers_for_host(@id, 16)
+    end
+
+    def unassigned_dpi_rule_identifiers
+      @dsm.dpi_rule_identifiers_for_host(@id, 32)
+    end
+
+    def recommended__dpi_rule_identifiers
+      @dsm.dpi_rule_identifiers_for_host(@id, 33)
+    end
+
+    def unrecommended__dpi_rule_identifiers
+      @dsm.dpi_rule_identifiers_for_host(@id, 18)
+    end
+
+    def all_dpi_rules
+      dpi_rules_from_identifiers(all_dpi_rule_identifiers())
     end
 
     def assigned_dpi_rules
-      dpi_rules = Hash.new()
-      @dsm.dpi_rules.each { |rule| dpi_rules[rule.identifier]=rule }
-      assigned_dpi_rule_identifiers.map do |rule_identifier|
-        dpi_rules[rule_identifier]
-      end
+      dpi_rules_from_identifiers(assigned_dpi_rule_identifiers())
     end
 
   end
@@ -51,10 +73,9 @@ module DeepSecurity
       @dsm.security_progile(@security_profile_id)
     end
 
-    def assigned_dpi_rule_identifiers_for_host(id)
-      payload_filters(:hostID => id, :arguments => 16).map do |hash|
-        hash[:name].split(' ').first
-      end
+    def dpi_rule_identifiers_for_host(id, argument)
+      payload_filters2_show_rules(id, argument)
+      payload_filters2(:hostID => id, :arguments => argument).map { |hash| hash[:name].split(' ').first }
     end
 
   end

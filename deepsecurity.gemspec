@@ -16,9 +16,13 @@ Gem::Specification.new do |gem|
   gem.version       = DeepSecurity::VERSION
   
   gem.add_dependency "savon"
+  gem.add_dependency "httpclient"
   gem.add_dependency "ruby-cache"
   gem.add_dependency "colorize"
   gem.add_dependency "hpricot"
+  gem.add_dependency "progressbar"
+
+#  gem.add_dependency "rake"
     
 end
 

@@ -491,5 +491,43 @@ module DeepSecurity
       "WHOIS_IP" => :whois_ip
   }
 
+  # Security Profile Recommendation Engine configured state enumeration.
+  EnumTimeFilterType = {
+      "LAST_HOUR" => :last_hour,
+      "LAST_24_HOURS" => :last_24_hours,
+      "LAST_7_DAYS" => :last_7_days,
+      "CUSTOM_RANGE" => :custom_range,
+      "SPECIFIC_TIME" => :specific_time
+  }
+
+  # General filter operator enumeration. Used when filtering retrieved events by event ID that are greater than, less
+  # than, or equal to.
+  EnumOperator = {
+      "GREATER_THAN" => :greater_than,
+      "LESS_THAN" => :less_than,
+      "EQUAL" => :equal
+  }
+
+  # The origin of an event enumeration.
+  EnumEventOrigin = {
+      "UNKNOWN" => :unknown,
+      "AGENT" => :agent,
+      "GUESTAGENT" => :guestagent,
+      "APPLIANCEAGENT" => :applianceagent,
+      "MANAGER" => :manager
+  }
+
+  # Malware type enumeration.
+  EnumMalwareType = {
+      "GENERAL" => :general,
+      "SPYWARE" => :spyware
+  }
+
+  # Malware scan type enumeration.
+  EnumAntiMalwareScanType = {
+      "REALTIME" => :realtime,
+      "MANUAL" => :manual,
+      "SCHEDULED" => :scheduled
+  }
 
 end

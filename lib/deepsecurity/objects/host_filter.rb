@@ -16,6 +16,39 @@ module DeepSecurity
       instance
     end
 
+    def self.hosts_in_group(host_group_id)
+      instance = self.new()
+      instance.type = :hosts_in_group
+      instance.host_group_id = host_group_id
+      instance
+    end
+
+    def self.hosts_using_security_profile(security_profile_id)
+      instance = self.new()
+      instance.type = :hosts_using_security_profile
+      instance.security_profile_id = security_profile_id
+      instance
+    end
+
+    def self.hosts_in_group_and_all_subgroups(host_group_id)
+      instance = self.new()
+      instance.type = :hosts_in_group_and_all_subgroups
+      instance.host_group_id = host_group_id
+      instance
+    end
+
+    def self.specific_host(host_id)
+      instance = self.new()
+      instance.type = :specific_host
+      instance.host_id = host_id
+      instance
+    end
+
+    def self.my_hosts
+      instance = self.new()
+      instance.type = :my_hosts
+      instance
+    end
 
   end
 
