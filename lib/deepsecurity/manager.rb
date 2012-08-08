@@ -6,12 +6,13 @@ require "yaml"
 
 module DeepSecurity
 
-# This class represents the DeepSecurity Manager. It's the entry point for all further actions
+  # This class  represents the DeepSecurity Manager. It's the entry point for all further actions
   class Manager
 
-    attr_reader :session_id
-    attr_accessor :logger
+    attr_reader :session_id # @return [String, nil] The session id once authenticated
+    attr_accessor :logger # @return [Logger] The logger or nil
 
+    # Connect to the Deep Security Manager on hostname using username and password.
     def self.connect(hostname, username, password, port=4119, log_level=nil)
       dsm = self.new(hostname, port)
       dsm.logger.level = log_level unless log_level.nil?

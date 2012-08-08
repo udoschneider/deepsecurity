@@ -1,5 +1,6 @@
 module DeepSecurity
 
+  # @abstract Base class that all Deep Security objects are derived from
   class DSMObject
 
     attr_accessor :dsm
