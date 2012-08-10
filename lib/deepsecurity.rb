@@ -1,8 +1,10 @@
-require "curb"
+# @author Udo Schneider <Udo.Schneider@homeaddress.de>
 
-require "time"
-require "cache"
-require "active_support/core_ext"
+# require "curb"
+
+# require "time"
+# require "cache"
+# require "active_support/core_ext"
 
 require "deepsecurity/version"
 

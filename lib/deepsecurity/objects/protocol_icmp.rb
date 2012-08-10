@@ -1,8 +1,8 @@
 module DeepSecurity
 
-  class ProtocolICMP < DSMObject
+  class ProtocolICMP < TransportObject
 
-    attr_enum_accessor EnumProtocolIcmpType, :type
+    attr_enum_accessor :type, EnumProtocolIcmpType
 
     def cache_seperatly?
       false

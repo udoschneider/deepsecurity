@@ -6,10 +6,10 @@ module DeepSecurity
   # event ID in order to retrieve a specific event by ID, or events that are greater or less than a specified ID. For
   # example, a utility that is designed to retrieve all new events on an interval can use the event ID property to
   # uniquely identify which events have already been retrieved. This way retrieval of duplicate events can be avoided.
-  class IDFilter < DSMObject
+  class IDFilter < TransportObject
 
     attr_integer_accessor :id
-    attr_enum_accessor EnumOperator, :operator
+    attr_enum_accessor :operator, EnumOperator
 
     def self.equals(id)
       instance = self.new()

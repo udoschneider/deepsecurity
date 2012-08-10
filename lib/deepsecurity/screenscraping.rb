@@ -1,4 +1,4 @@
-require "hpricot"
+# require "hpricot"
 
 module DeepSecurity
   class Manager

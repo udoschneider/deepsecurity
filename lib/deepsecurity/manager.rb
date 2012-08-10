@@ -1,8 +1,11 @@
+# @author Udo Schneider <Udo.Schneider@homeaddress.de>
+
 require "savon"
-require "httpi"
-require "colorize"
-require "logger"
-require "yaml"
+require "cache"
+# require "httpi"
+# require "colorize"
+# require "logger"
+# require "yaml"
 
 module DeepSecurity
 
@@ -88,12 +91,12 @@ module DeepSecurity
 
     # Helper Method deserializing the SOAP response into an object
     def request_object(method_name, object_class, soap_body={})
-      object_class.from_hash(self, send_authenticated_request(method_name, soap_body))
+      object_class.from_savon_data(self, send_authenticated_request(method_name, soap_body))
     end
 
     # Helper Method deserializing the SOAP response into an object
     def request_array(method_name, object_class, soap_body={})
-      send_authenticated_request(method_name, soap_body).map { |each| object_class.from_hash(self, each) }
+      send_authenticated_request(method_name, soap_body).map { |each| object_class.from_savon_data(self, each) }
     end
 
     def cache
