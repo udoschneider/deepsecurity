@@ -146,7 +146,7 @@ module DeepSecurity
     #     $2
     #     @return [Boolean]
     # Define a new Boolean accessor
-    def self.attr_boolean_accessor(symbol, description)
+    def self.attr_boolean_accessor(symbol, description='')
       ivar_savon_mappings[symbol] = BooleanMapping.new(description)
       attr_accessor symbol
     end
@@ -156,7 +156,7 @@ module DeepSecurity
     #     $2
     #     @return [Array<Boolean>]
     # Define a new Boolean Array accessor
-    def self.array_boolean_accessor(symbol, description)
+    def self.array_boolean_accessor(symbol, description='')
       ivar_savon_mappings[symbol] = ArrayMapping.new(BooleanMapping.new, description)
       attr_accessor symbol
     end
@@ -166,7 +166,7 @@ module DeepSecurity
     #     $2
     #     @return [DateTime]
     # Define a new DateTime accessor
-    def self.attr_datetime_accessor(symbol, description)
+    def self.attr_datetime_accessor(symbol, description='')
       ivar_savon_mappings[symbol] = DatetimeMapping.new(description)
       attr_accessor symbol
     end
@@ -176,7 +176,7 @@ module DeepSecurity
     #     $2
     #     @return [Array<DateTime>]
     # Define a new DateTime Array accessor
-    def self.array_datetime_accessor(symbol, description)
+    def self.array_datetime_accessor(symbol, description='')
       ivar_savon_mappings[symbol] = ArrayMapping.new(DatetimeMapping.new, description)
       attr_accessor symbol
     end
@@ -186,7 +186,7 @@ module DeepSecurity
     #     $2
     #     @return [float]
     # Define a new Float accessor
-    def self.attr_double_accessor(symbol, description)
+    def self.attr_double_accessor(symbol, description='')
       ivar_savon_mappings[symbol] = FloatMapping.new(description)
       attr_accessor symbol
     end
@@ -196,7 +196,7 @@ module DeepSecurity
     #     $2
     #     @return [Array<float>]
     # Define a new Float Array accessor
-    def self.array_double__accessor(symbol, description)
+    def self.array_double__accessor(symbol, description='')
       ivar_savon_mappings[symbol] = ArrayMapping.new(FloatMapping.new, description)
       attr_accessor symbol
     end
@@ -206,7 +206,7 @@ module DeepSecurity
     #     $3
     #     @return [$2]
     # Define a new Enum accessor
-    def self.attr_enum_accessor(symbol, enum, description)
+    def self.attr_enum_accessor(symbol, enum, description='')
       ivar_savon_mappings[symbol] = EnumMapping.new(enum, description)
       attr_accessor symbol
     end
@@ -216,7 +216,7 @@ module DeepSecurity
     #     $3
     #     @return [Array<$2>]
     # Define a new Enum Array accessor
-    def self.array_enum_accessor(symbol, enum, description)
+    def self.array_enum_accessor(symbol, enum, description='')
       ivar_savon_mappings[symbol] = ArrayMapping.new(EnumMapping.new(enum), description)
       attr_accessor symbol
     end
@@ -226,7 +226,8 @@ module DeepSecurity
     #     $2
     #     @return [float]
     # Define a new Float accessor
-    def self.attr_float_accessor(symbol, description)
+    def self.attr_float_accessor(symbol, description='')
+
       ivar_savon_mappings[symbol] = FloatMapping.new(description)
       attr_accessor symbol
     end
@@ -236,7 +237,7 @@ module DeepSecurity
     #     $2
     #     @return [Array<float>]
     # Define a new Float array accessor
-    def self.array_float__accessor(symbol, description)
+    def self.array_float__accessor(symbol, description='')
       ivar_savon_mappings[symbol] = ArrayMapping.new(FloatMapping.new, description)
       attr_accessor symbol
     end
@@ -246,7 +247,7 @@ module DeepSecurity
     #     $2
     #     @return [int]
     # Define a new Integer accessor
-    def self.attr_integer_accessor(symbol, description)
+    def self.attr_integer_accessor(symbol, description='')
       ivar_savon_mappings[symbol] = IntegerMapping.new(description)
       attr_accessor symbol
     end
@@ -256,7 +257,7 @@ module DeepSecurity
     #     $2
     #     @return [Array<int>]
     # Define a new Integer Array accessor
-    def self.array_integer_accessor(symbol, description)
+    def self.array_integer_accessor(symbol, description='')
       ivar_savon_mappings[symbol] = ArrayMapping.new(IntegerMapping.new, description)
       attr_accessor symbol
     end
@@ -266,7 +267,7 @@ module DeepSecurity
     #     $2
     #     @return [int]
     # Define a new IP Address accessor
-    def self.attr_ip_address_accessor(symbol, description)
+    def self.attr_ip_address_accessor(symbol, description='')
       ivar_savon_mappings[symbol] = IPAddressMapping.new(description)
       attr_accessor symbol
     end
@@ -276,7 +277,7 @@ module DeepSecurity
     #     $2
     #     @return [Array<int>]
     # Define a new IP Address Array accessor
-    def self.array_ip_address_accessor(symbol, description)
+    def self.array_ip_address_accessor(symbol, description='')
       ivar_savon_mappings[symbol] = ArrayMapping.new(IPAddressMapping.new, description)
       attr_accessor symbol
     end
@@ -286,7 +287,7 @@ module DeepSecurity
     #     $3
     #     @return [$2]
     # Define a new Object accessor
-    def self.attr_object_accessor(symbol, klass, description)
+    def self.attr_object_accessor(symbol, klass, description='')
       ivar_savon_mappings[symbol] = ObjectMapping.new(klass, description)
       attr_accessor symbol
     end
@@ -296,7 +297,7 @@ module DeepSecurity
     #     $3
     #     @return [Array<$2>]
     # Define a new Object Array accessor
-    def self.array_object_accessor(symbol, klass, description)
+    def self.array_object_accessor(symbol, klass, description='')
       ivar_savon_mappings[symbol] = ArrayMapping.new(ObjectMapping.new(klass), description)
       attr_accessor symbol
     end
@@ -306,7 +307,7 @@ module DeepSecurity
     #     $2
     #     @return [String]
     # Define a new String accessor
-    def self.attr_string_accessor(symbol, description)
+    def self.attr_string_accessor(symbol, description='')
       ivar_savon_mappings[symbol] = StringMapping.new(description)
       attr_accessor symbol
     end
@@ -316,7 +317,7 @@ module DeepSecurity
     #     $2
     #     @return [Array<String>]
     # Define a new String Array accessor
-    def self.array_string_accessor(symbol, description)
+    def self.array_string_accessor(symbol, description='')
       ivar_savon_mappings[symbol] = ArrayMapping.new(StringMapping.new, description)
       attr_accessor symbol
     end
