@@ -17,7 +17,7 @@ require "deepsecurity/exceptions/authentication_required_exception"
 require "deepsecurity/manager"
 require "deepsecurity/screenscraping"
 
-require "deepsecurity/objects/dsm_object"
+require "deepsecurity/transport_object"
 
 require "deepsecurity/objects/host_filter"
 require "deepsecurity/objects/time_filter"
