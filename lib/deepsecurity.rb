@@ -13,30 +13,31 @@ require "deepsecurity/enums"
 require "deepsecurity/exceptions/soap_exception"
 require "deepsecurity/exceptions/authentication_failed_exception"
 require "deepsecurity/exceptions/authentication_required_exception"
+require "deepsecurity/exceptions/missing_type_mapping_exception"
 
 require "deepsecurity/manager"
 require "deepsecurity/screenscraping"
 
 require "deepsecurity/transport_object"
 
-require "deepsecurity/objects/host_filter"
-require "deepsecurity/objects/time_filter"
-require "deepsecurity/objects/id_filter"
+require "deepsecurity/transport_objects/host_filter"
+require "deepsecurity/transport_objects/time_filter"
+require "deepsecurity/transport_objects/id_filter"
 
-require "deepsecurity/objects/dpi_rule"
-require "deepsecurity/objects/protocol_icmp"
-require "deepsecurity/objects/protocol_port_based"
-require "deepsecurity/objects/application_type"
-require "deepsecurity/objects/host_group"
-require "deepsecurity/objects/host"
-require "deepsecurity/objects/host_detail"
-require "deepsecurity/objects/security_profile"
-require "deepsecurity/objects/system_event"
-require "deepsecurity/objects/anti_malware_spyware_item"
-require "deepsecurity/objects/anti_malware_event"
+require "deepsecurity/transport_objects/dpi_rule"
+require "deepsecurity/transport_objects/protocol_icmp"
+require "deepsecurity/transport_objects/protocol_port_based"
+require "deepsecurity/transport_objects/application_type"
+require "deepsecurity/transport_objects/host_group"
+require "deepsecurity/transport_objects/host"
+require "deepsecurity/transport_objects/host_detail"
+require "deepsecurity/transport_objects/security_profile"
+require "deepsecurity/transport_objects/system_event"
+require "deepsecurity/transport_objects/anti_malware_spyware_item"
+require "deepsecurity/transport_objects/anti_malware_event"
 
 
-require "deepsecurity/objects/private/vulnerability"
+require "deepsecurity/transport_objects/private/vulnerability"
 
 
 Savon.configure do |config|
@@ -66,4 +67,16 @@ def retryable(options = {}, &block)
   end
 
   yield
+end
+
+module DeepSecurity
+
+  def self.logger
+    if @logger.nil?
+      @logger ||= Logger.new(STDOUT)
+      @logger.level = Logger::INFO
+    end
+    @logger
+  end
+
 end

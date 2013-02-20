@@ -30,9 +30,9 @@ module DeepSecurity
     # to hosts can be included or excluded.
     def system_events(timeFilter, hostFilter, eventIdFilter, includeNonHostEvents)
       events = send_authenticated_request("system_event_retrieve", {
-          :timeFilter => timeFilter.as_savon_data,
-          :hostFilter => hostFilter.as_savon_data,
-          :eventIdFilter => eventIdFilter.as_savon_data,
+          :timeFilter => timeFilter.to_savon_data,
+          :hostFilter => hostFilter.to_savon_data,
+          :eventIdFilter => eventIdFilter.to_savon_data,
           :includeNonHostEvents => includeNonHostEvents ? "true" : "false"})[:system_events]
       return [] if events.nil?
       events[:item].map do |each|

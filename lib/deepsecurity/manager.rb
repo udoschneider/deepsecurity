@@ -3,7 +3,6 @@
 require "savon"
 require "cache"
 # require "httpi"
-# require "colorize"
 # require "logger"
 # require "yaml"
 
@@ -103,13 +102,8 @@ module DeepSecurity
       @cache ||= Cache.new(nil, nil, 10000, 5*60)
     end
 
-    # Lazy initialization of a logger instance
     def logger
-      if @logger.nil?
-        @logger ||= Logger.new(STDOUT)
-        @logger.level = Logger::INFO
-      end
-      @logger
+     DeepSecurity::logger
     end
 
     public

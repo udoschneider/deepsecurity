@@ -4,7 +4,6 @@ module DeepSecurity
   # merging states of potentially multiple endpoints (i.e., Agent + Appliance).
   class HostDetail < Host
 
-=begin
     attr_integer_accessor :id
     attr_string_accessor :description
     attr_string_accessor :name
@@ -12,11 +11,10 @@ module DeepSecurity
     attr_boolean_accessor :external
     attr_string_accessor :external_id
     attr_integer_accessor :host_group_id
-    attr_enum_accessor EnumHostType, :host_type
+    attr_enum_accessor :host_type, EnumHostType
     attr_string_accessor :platform
     attr_integer_accessor :security_profile_id
     # ABOVE is duplicates from Host!
-=end
 
     attr_string_accessor :anti_malware_classic_pattern_version
     attr_string_accessor :anti_malware_engine_version
@@ -48,8 +46,8 @@ module DeepSecurity
     attr_string_accessor :overall_log_inspection_status
     attr_string_accessor :overall_status
     attr_string_accessor :overall_version
-    attr_string_accessor :overall_web_reputation_status,
-                         :security_profile_name
+    attr_string_accessor :overall_web_reputation_status
+    attr_string_accessor :security_profile_name
     attr_string_accessor :virtual_name
     attr_string_accessor :virtual_uuid
     array_integer_accessor :component_klasses
@@ -67,7 +65,7 @@ module DeepSecurity
     def host_detail_retrieve(host_filter, detail_level)
       cache.fetch(HostDetail.cache_key(:all, :all)) do
         request_array("host_detail_retrieve", HostDetail, {
-            :host_filter => host_filter.as_savon_data,
+            :host_filter => host_filter.to_savon_data,
             :host_detail_level => EnumHostDetailLevel.key(detail_level)
         })
       end

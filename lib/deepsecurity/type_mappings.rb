@@ -2,25 +2,35 @@ module DeepSecurity
 
   class TypeMapping
 
-    def initialize(description=nil)
+    def logger
+      DeepSecurity::logger
+    end
+
+    def initialize(description='')
       @description = description
     end
 
     def from_savon_data(data)
-      raise "Implement me!"
+      logger.error { "#{self.class}##{__method__}(#{data.inspect}) not implemented!" }
     end
 
     def to_savon_data(value)
-      raise "Implement me!"
+      logger.error { "#{self.class}##{__method__}(#{value.inspect}) not implemented!" }
     end
 
   end
 
   class ArrayMapping < TypeMapping
 
-    def initialize(element_mapping, description=nil)
+    def initialize(element_mapping, description='')
       super(description)
       @element_mapping = element_mapping
+    end
+
+    def from_savon_data(data)
+      data[:item].map do |each|
+        @element_mapping.from_savon_data(each)
+      end
     end
 
   end
@@ -51,9 +61,17 @@ module DeepSecurity
 
   class EnumMapping < TypeMapping
 
-    def initialize(enum, description=nil)
+    def initialize(enum, description='')
       super(description)
       @enum = enum
+    end
+
+    def from_savon_data(data)
+      @enum[data]
+    end
+
+    def to_savon_data(value)
+      @enum.key(value)
     end
 
   end
@@ -96,7 +114,7 @@ module DeepSecurity
 
   class ObjectMapping < TypeMapping
 
-    def initialize(klass, description=nil)
+    def initialize(klass, description='')
       super(description)
       @klass = klass
     end

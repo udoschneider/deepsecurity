@@ -9,7 +9,7 @@ module DeepSecurity
     attr_boolean_accessor :external
     attr_string_accessor :external_id
     attr_integer_accessor :host_group_id
-    attr_enum_accessor EnumHostType, :host_type
+    attr_enum_accessor :host_type, EnumHostType
     attr_string_accessor :platform
     attr_integer_accessor :security_profile_id
 
