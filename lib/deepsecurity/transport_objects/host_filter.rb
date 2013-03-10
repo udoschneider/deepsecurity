@@ -7,10 +7,15 @@ module DeepSecurity
   # event retrieval method calls to events that pertain to computers with the specific Security Profile assigned.
   class HostFilter < TransportObject
 
-    attr_integer_accessor :host_group_id, "HostGroupTransport ID to filter computers by"
-    attr_integer_accessor :host_id, "HostTransport ID to filter computers by"
-    attr_integer_accessor :security_profile_id, "SecurityProfileTransport ID to filter computers by"
-    attr_enum_accessor :type, EnumHostFilterType, "EnumHostFilterType to filter computers by"
+    attr_integer_accessor :hostGroupID,
+                          "HostGroupTransport ID to filter computers by"
+    attr_integer_accessor :hostID,
+                          "HostTransport ID to filter computers by"
+    attr_integer_accessor :securityProfileID,
+                          "SecurityProfileTransport ID to filter computers by"
+    attr_enum_accessor :type,
+                       EnumHostFilterType,
+                       "EnumHostFilterType to filter computers by"
 
     def self.all_hosts
       instance = self.new()
@@ -21,28 +26,28 @@ module DeepSecurity
     def self.hosts_in_group(host_group_id)
       instance = self.new()
       instance.type = :hosts_in_group
-      instance.host_group_id = host_group_id
+      instance.hostGroupID = host_group_id
       instance
     end
 
     def self.hosts_using_security_profile(security_profile_id)
       instance = self.new()
       instance.type = :hosts_using_security_profile
-      instance.security_profile_id = security_profile_id
+      instance.securityProfileID = security_profile_id
       instance
     end
 
     def self.hosts_in_group_and_all_subgroups(host_group_id)
       instance = self.new()
       instance.type = :hosts_in_group_and_all_subgroups
-      instance.host_group_id = host_group_id
+      instance.hostGroupID = host_group_id
       instance
     end
 
     def self.specific_host(host_id)
       instance = self.new()
       instance.type = :specific_host
-      instance.host_id = host_id
+      instance.hostID = host_id
       instance
     end
 

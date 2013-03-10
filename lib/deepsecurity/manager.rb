@@ -3,60 +3,46 @@
 require "savon"
 require "cache"
 # require "httpi"
-# require "logger"
+require "logger"
 # require "yaml"
 
 module DeepSecurity
 
+  LOG_MAPPING = {
+      :debug => Logger::DEBUG,
+      :info => Logger::INFO,
+      :warn => Logger::WARN,
+      :error => Logger::ERROR,
+      :fatal => Logger::FATAL
+  }
+
   # This class  represents the DeepSecurity Manager. It's the entry point for all further actions
-  class Manager
+  class Manager <DSObject
 
-    attr_reader :session_id # @return [String, nil] The session id once authenticated
-    attr_accessor :logger # @return [Logger] The logger or nil
+    @@current = nil
 
-    # Connect to the Deep Security Manager on hostname using username and password.
-    def self.connect(hostname, username, password, port=4119, log_level=nil)
-      dsm = self.new(hostname, port)
-      dsm.logger.level = log_level unless log_level.nil?
-      dsm.authenticate(username, password)
-      dsm
+    def self.current
+      @@current
+    end
+
+    def reset
+      @@current = nil
     end
 
     # Obtain a new wrapper around the DeepSecurity Manager SOAP API.
-    # Please note that the port is always assumed to be +4119+!
-    def initialize(hostname, port=4119)
+    def initialize(hostname, port=4119, log_level)
       @hostname = hostname
       @port = port
       super()
-      @client = Savon::Client.new do
-        wsdl.document = "https://#{hostname}:#{port}/webservice/Manager?WSDL"
-        http.auth.ssl.verify_mode=:none
-      end
+      @client = Savon.client(:wsdl => "https://#{hostname}:#{port}/webservice/Manager?WSDL",
+                             :convert_request_keys_to => :none, # or one of [:lower_camelcase, :upcase, :none]
+                             :ssl_verify_mode => :none,
+                             :logger => logger,
+                             :log_level => log_level,
+                             :log => (!log_level.nil?))
     end
 
-    # Send a Request to the SOAP API for method +method_name+ with the data in +soap_body+ and unwrap the response
-    def send_request(method_name, soap_body = {})
-      retryable(:tries => 5, :on => Errno::ECONNRESET) do
-        logger.debug { "#{self.class}\##{__method__}(#{method_name.inspect}, #{soap_body.inspect})" }
-        begin
-          response = @client.request method_name do
-            soap.body = soap_body
-          end
-          return response.to_hash[(method_name+"_response").to_sym][(method_name+"_return").to_sym]
-        rescue Savon::Error => e
-          raise SOAPException, e.message
-        end
-      end
-    end
-
-    # Send an authenticated Request to the SOAP API for method +method_name+ with the data in +soap_body+ and unwrap the response
-    def send_authenticated_request(method_name, soap_body={})
-      logger.debug { "#{self.class}##{__method__}(#{method_name}, #{soap_body.to_s})" }
-      raise AuthenticationRequiredException if !authenticated?
-      authenticated_soap_body = soap_body
-      soap_body[:sid] = @session_id
-      send_request(method_name, soap_body)
-    end
+    # @!group Request Helper
 
     # Send an authenticated WebUI Request to the Server for URL +url and return the response body
     def send_authenticated_http_get(path)
@@ -65,7 +51,7 @@ module DeepSecurity
       request = HTTPI::Request.new(url)
       request.auth.ssl.verify_mode = :none
       request.headers = {
-          "Cookie" => "sID=#{@session_id}"
+          "Cookie" => "sID=#{@sID}"
       }
       request.gzip
       response = HTTPI.get request
@@ -79,7 +65,7 @@ module DeepSecurity
       request = HTTPI::Request.new(url)
       request.auth.ssl.verify_mode = :none
       request.headers = {
-          "Cookie" => "sID=#{@session_id}",
+          "Cookie" => "sID=#{@sID}",
           "Content-Type" => "application/x-www-form-urlencoded"
       }
       request.gzip
@@ -88,58 +74,149 @@ module DeepSecurity
       response.body
     end
 
-    # Helper Method deserializing the SOAP response into an object
-    def request_object(method_name, object_class, soap_body={})
-      object_class.from_savon_data(self, send_authenticated_request(method_name, soap_body))
-    end
+    # @!endgroup
 
-    # Helper Method deserializing the SOAP response into an object
-    def request_array(method_name, object_class, soap_body={})
-      send_authenticated_request(method_name, soap_body).map { |each| object_class.from_savon_data(self, each) }
-    end
+    # @!group Caching
 
     def cache
       @cache ||= Cache.new(nil, nil, 10000, 5*60)
     end
 
-    def logger
-     DeepSecurity::logger
-    end
+    # @!endgroup
 
     public
 
+    # @!group High-Level SOAP Wrapper
+
     # Retrieves the Manager Web Service API version. Not the same as the Manager version.
-    # RETURNS  The Web Service API version.
+    # @return [Integer] The Web Service API version.
     def api_version
-      send_request("get_api_version").to_i
+      dsm.getApiVersion()
     end
 
     # Retrieve the Manager Web Service API version. Not the same as the Manager version.
-    # RETURNS: Manager time.
+    # @return [Time] Manager time as a language localized object.
     def manager_time
-      send_request("get_manager_time")
+      dsm.getManagerTime()
     end
 
-    # Authenticate to the DSM with the given credentials.
-    def authenticate(username, password)
-      begin
-        @session_id = send_request("authenticate", {:username => username, :password => password}).to_s
-      rescue Errno::ECONNABORTED, DeepSecurity::SOAPException => e
-        raise AuthenticationFailedException, e.message
-      end
+    # Set connection parameters
+    # @param [String] hostname host to connect to
+    # @param [Integer] port port to connect to
+    # @param [LOG_MAPPING] log_level Log Level
+    def self.server(hostname, port=4119, log_level=nil)
+      dsm = self.new(hostname, port, log_level)
+      dsm.logger.level = LOG_MAPPING[log_level] unless log_level.nil?
+      @@current = dsm
     end
 
-    # Check if the session has been authenticated.
-    def authenticated?
-      !@session_id.nil?
+    # Authenticates a user within the given tenant, and returns a session ID for use when calling other methods of Manager. When no longer required, the session should be terminated by calling endSession.
+    # @param [String] tenant
+    # @param [String] username
+    # @param [String] password
+    # @return [Manager] The current manager
+    def connect(tenant, username, password)
+      @sID = tenant.blank? ? authenticate(username, password) : authenticate_tenant(tenant, username, password)
+      dsm
+    rescue Savon::SOAPFault => error
+      raise AuthenticationFailedException.new(error.to_hash[:fault][:detail][:exception_name].to_s)
     end
 
     # Ends an authenticated user session. The Web Service client should end the authentication session in all exit cases.
-    def end_session
-      if @session_id
-        send_authenticated_request("end_session")
-        @session_id = nil
-      end
+    # @return [void]
+    def disconnect
+      dsm.end_session() if authenticated?
+      dsm.reset
+      nil
+    end
+
+    # @!endgroup
+
+    # @!group Low-Level SOAP Wrapper
+
+    # Retrieves the Manager Web Service API version. Not the same as the Manager version.
+    #
+    # SYNTAX
+    #   int getApiVersion()
+    #
+    # PARAMETERS
+    #
+    # RETURNS
+    #   The Web Service API version.
+    def getApiVersion
+      send_soap(:get_api_version).to_i
+    end
+
+    # Retrieve the Manager Web Service API version. Not the same as the Manager version.
+    #
+    # SYNTAX
+    #   getManagerTime()
+    #
+    # PARAMETERS
+    #
+    # RETURNS
+    #   Manager time as a language localized object. For example, a Java client would return a Calendar object, and a C# client would return a DataTime object.
+    def getManagerTime
+      Time.parse(send_soap(:get_manager_time))
+    end
+
+    # Authenticates a user for and returns a session ID for use when calling other Web Service methods.
+    #
+    # SYNTAX
+    #   String authenticate(String username, String password)
+    #
+    # PARAMETERS
+    #   username Account username.
+    #   password Account password.
+    #
+    # RETURNS
+    #   Authenticated user session ID.
+    def authenticate(username, password)
+      send_soap(:authenticate, {:username => username, :password => password}).to_s
+    end
+
+    # Authenticates a user within the given tenant, and returns a session ID for use when calling other methods of Manager. When no longer required, the session should be terminated by calling endSession.
+    #
+    # SYNTAX
+    #   String authenticateTenant(String tenantName, String username, String password)
+    #
+    # PARAMETERS
+    #   tenantName Tenant Name.
+    #   username Account username.
+    #   password Account password.
+    #
+    # RETURNS
+    #   Authenticated user session ID.
+    def authenticate_tenant(tenantName, username, password)
+      send_soap(:authenticate_tenant, {:tenantName => tenantName, :username => username, :password => password}).to_s
+    end
+
+    # Ends an authenticated user session. The Web Service client should end the authentication session in all exit cases.
+    #
+    # SYNTAX
+    #   void endSession(String sID)
+    #
+    # PARAMETERS
+    #   sID Authentication session identifier ID.
+    # RETURNS
+    def end_session(sID = dsm.sID)
+      send_soap(:end_session, :sID => sID)
+    end
+
+    # @!endgroup
+
+    # Check if the session has been authenticated.
+    def authenticated?
+      !@sID.nil?
+    end
+
+    def sID
+      raise DeepSecurity::AuthenticationRequiredException unless authenticated?
+      @sID
+    end
+
+    def client
+      @client
     end
 
   end

@@ -29,14 +29,14 @@ module DeepSecurity
     # Retrieves the system events specified by the time, host and event ID filters. System events that do not pertain
     # to hosts can be included or excluded.
     def system_events(timeFilter, hostFilter, eventIdFilter, includeNonHostEvents)
-      events = send_authenticated_request("system_event_retrieve", {
+      events = send_authenticated_soap("system_event_retrieve", {
           :timeFilter => timeFilter.to_savon_data,
           :hostFilter => hostFilter.to_savon_data,
           :eventIdFilter => eventIdFilter.to_savon_data,
           :includeNonHostEvents => includeNonHostEvents ? "true" : "false"})[:system_events]
       return [] if events.nil?
       events[:item].map do |each|
-        SystemEvent.from_savon_data(self, each)
+        SystemEvent.from_savon_data(each)
       end
     end
 

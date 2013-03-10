@@ -15,12 +15,16 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version = DeepSecurity::VERSION
 
+  gem.add_dependency "json"
   gem.add_dependency "savon"
   gem.add_dependency "ruby-cache"
+
+  gem.add_dependency "gli"
 
   gem.add_dependency 'yard'
   gem.add_dependency 'redcarpet'
   gem.add_dependency 'github-markup'
+  gem.add_dependency 'progressbar'
 
 end
 

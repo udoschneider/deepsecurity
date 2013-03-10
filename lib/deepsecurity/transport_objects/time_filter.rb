@@ -5,12 +5,12 @@ module DeepSecurity
   # be required. If the EnumTimeFilterType SPECIFIC_TIME type is set, then the specifiicTime property will be required.
   class TimeFilter < TransportObject
 
-    attr_datetime_accessor :range_from
-    attr_datetime_accessor :range_to
-    attr_datetime_accessor :specific_time
-    attr_integer_accessor :host_group_id
-    attr_integer_accessor :host_id
-    attr_integer_accessor :security_profile_id
+    attr_datetime_accessor :rangeFrom
+    attr_datetime_accessor :rangeTo
+    attr_datetime_accessor :specificTime
+    # attr_integer_accessor :host_group_id
+    # attr_integer_accessor :host_id
+    # attr_integer_accessor :security_profile_id
     attr_enum_accessor :type, EnumTimeFilterType
 
     def self.last_hour
@@ -34,15 +34,15 @@ module DeepSecurity
     def self.custom_range(range)
       instance = self.new()
       instance.type = :custom_range
-      instance.range_from = range.first
-      instance.range_to = range.last
+      instance.rangeFrom = range.first
+      instance.rangeTo = range.last
       instance
     end
 
-    def self.specific_time(datetime)
+    def self.specificTime(datetime)
       instance = self.new()
-      instance.type = :specific_time
-      instance.specific_time = datetime
+      instance.type = :specificTime
+      instance.specificTime = datetime
       instance
     end
 

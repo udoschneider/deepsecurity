@@ -6,7 +6,7 @@ module DeepSecurity
     private
 
     # Helper Method: Clean up any HTML remnants (e.g. &nbsp;)
-    def clean_html_string(string) 
+    def clean_html_string(string)
       string.
           inner_text.
           gsub(/\s+/, " ").
@@ -14,7 +14,7 @@ module DeepSecurity
     end
 
     # Helper Method: Convert header string to camel cased symbol
-    def symbolize_header(string) 
+    def symbolize_header(string)
       string.
           gsub(/::/, '/').
           gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').
@@ -26,7 +26,7 @@ module DeepSecurity
     end
 
     # Fetch the given +action+ with +parameters+. Post the result with settings changed according to +settings+
-    def post_setting(action, parameters, settings) 
+    def post_setting(action, parameters, settings)
       parameters_string = URI.escape(parameters.map { |key, value| "#{key}=#{value}" }.join("&"))
       path = "/#{action}?#{parameters_string}"
       body = send_authenticated_http_get(path)
@@ -49,19 +49,19 @@ module DeepSecurity
     end
 
     # Enable display of DPI rules "type" for a given host
-    def payload_filters2_show_rules(host_id, type) 
+    def payload_filters2_show_rules(host_id, type)
       post_setting("PayloadFilter2s.screen", {
           "hostID" => host_id,
           "noSearch" => true,
           "hideStandardHeader" => true
       }, {
-          "command" => "CHANGEASSIGNFILTER",
-          "arguments" => type}
+                       "command" => "CHANGEASSIGNFILTER",
+                       "arguments" => type}
       )
     end
 
     # Enable vulnerability columns in DPI rules display
-    def payload_filters2_enable_vulnerability_columns 
+    def payload_filters2_enable_vulnerability_columns
 
       action = "AddRemoveColumns.screen"
       parameters = {
@@ -81,7 +81,7 @@ module DeepSecurity
     end
 
     # Retrieve DPI rules
-    def payload_filters2(optional_parameters = {}) 
+    def payload_filters2(optional_parameters = {})
 
       num_rules = nil
       rules = []

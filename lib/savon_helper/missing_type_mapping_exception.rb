@@ -1,4 +1,5 @@
-module DeepSecurity
+module SavonHelper
+
 # This class encapsulates a missing TypeMapping
   class MissingTypeMappingException < Exception
 

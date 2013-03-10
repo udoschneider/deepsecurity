@@ -1,4 +1,6 @@
-module DeepSecurity
+# @author Udo Schneider <Udo.Schneider@homeaddress.de>
+
+module SavonHelper
 
   class TypeMapping
 
@@ -18,9 +20,37 @@ module DeepSecurity
       logger.error { "#{self.class}##{__method__}(#{value.inspect}) not implemented!" }
     end
 
+    def description
+      @description
+    end
+
+    def object_klass
+      logger.error { "#{self.class}##{__method__}() not implemented!" }
+    end
+
   end
 
   class ArrayMapping < TypeMapping
+
+    def self.from_savon_data(klass, data)
+      return [] if data.blank?
+      result = []
+      if data.is_a?(Array)
+        data.each do |element|
+          result << klass.from_savon_data(element)
+        end
+      elsif data.is_a?(Hash)
+        item = data[:item]
+        if item.nil?
+          result << klass.from_savon_data(data)
+        else
+          result = from_savon_data(klass, item)
+        end
+      else
+        raise "Unknown Array mapping"
+      end
+      result
+    end
 
     def initialize(element_mapping, description='')
       super(description)
@@ -28,10 +58,19 @@ module DeepSecurity
     end
 
     def from_savon_data(data)
+      self.class.from_savon_data(@element_mapping, data)
+    end
+
+    def _from_savon_data(data)
+      return @element_mapping.from_savon_data(data[:item]) if data[:item].is_a?(Hash)
       data[:item].map do |each|
         @element_mapping.from_savon_data(each)
       end
     end
+
+    def object_klass
+       @element_mapping.object_klass
+     end
 
   end
 
@@ -91,7 +130,7 @@ module DeepSecurity
   class IntegerMapping < TypeMapping
 
     def from_savon_data(data)
-      data.to_i
+      Integer(data.to_s)
     end
 
     def to_savon_data(value)
@@ -119,6 +158,14 @@ module DeepSecurity
       @klass = klass
     end
 
+    def from_savon_data(data)
+      @klass.from_savon_data(data)
+    end
+
+    def object_klass
+      @klass
+    end
+
   end
 
   class StringMapping < TypeMapping
@@ -131,6 +178,41 @@ module DeepSecurity
       value.to_s
     end
 
+    def object_klass
+      String
+    end
+
+  end
+
+  class MissingMapping < TypeMapping
+
+    def from_savon_data(data)
+      data
+    end
+
+    def to_savon_data(value)
+      value
+    end
+
+  end
+
+  class HintMapping < TypeMapping
+
+    def initialize(klass, description='')
+      super(description)
+      @klass = klass
+    end
+
+    def object_klass
+      @klass
+    end
+
+  end
+
+  def self.define_missing_type_mapping(klass, ivar_name, value, mappings)
+    message = "No type mapping for #{klass}@#{ivar_name} = #{value}!"
+    DeepSecurity::Manager.current.logger.warn(message)
+    mappings[ivar_name] = MissingMapping.new(message)
   end
 
 end

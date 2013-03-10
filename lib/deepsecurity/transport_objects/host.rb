@@ -1,44 +1,66 @@
 module DeepSecurity
 
+  # The primary computer transport object that represents the computer systems Deep Security is aware of. Physical
+  # computers, virtual machines, ESX servers, and Deep Security Virtual Appliances are all represented as HostTransport
+  # objects.
+  #
+  # To determine a HostTransport status (e.g., Activated, Offline, Installed, etc.) the computer HostStatusTransport
+  # should be retrieved and the assigned ProtectionStatusTransport objects should be inspected. The HostTransportStatus
+  # will reflect the overall protection status of a computer. If protection is applied by both an in-guest Agent and
+  # Virtual Appliance, then two ProtectionStatusTransport objects will be assigned. Agent and Virtual Appliance
+  # protection may have different protection capabilities enabled, so inspection of all assigned
+  # ProtectionStatusTransport objects should considered. Note that this is only necessary where a Virtual Appliance is
+  # deployed. Computers and virtual machines that only use Agent protection may only use the HostTransportStatus.
   class Host < TransportObject
 
     attr_integer_accessor :id
     attr_string_accessor :name
     attr_string_accessor :description
-    attr_string_accessor :display_name
-    attr_boolean_accessor :external
-    attr_string_accessor :external_id
-    attr_integer_accessor :host_group_id
-    attr_enum_accessor :host_type, EnumHostType
-    attr_string_accessor :platform
-    attr_integer_accessor :security_profile_id
+
+    attr_string_accessor :display_name,
+                         'Computer display name'
+    attr_boolean_accessor :external,
+                          'Administrative external boolean for integration purposes.'
+    attr_string_accessor :external_id,
+                         'Administrative external ID for integration purposes.'
+    attr_integer_accessor :host_group_id,
+                          'Assigned HostGroupTransport ID'
+    attr_enum_accessor :host_type,
+                       EnumHostType,
+                       'Assigned host type'
+    attr_string_accessor :platform,
+                         'Computer platform'
+    attr_integer_accessor :security_profile_id,
+                          'Assigned SecurityProfileTransport ID'
 
     cache_by_aspect :id, :name
 
+    # @!group High-Level Screenscraping Wrapper
+
     def dpi_rules_from_identifiers(rule_identifiers)
       dpi_rules = Hash.new()
-      @dsm.dpi_rules.each { |rule| dpi_rules[rule.identifier]=rule }
+      Manager.current.dpi_rules.each { |rule| dpi_rules[rule.identifier]=rule }
       rule_identifiers.map { |rule_identifier| dpi_rules[rule_identifier] }
     end
 
     def all_dpi_rule_identifiers
-      @dsm.dpi_rule_identifiers_for_host(@id, 0)
+      Manager.current.dpi_rule_identifiers_for_host(@id, 0)
     end
 
     def assigned_dpi_rule_identifiers
-      @dsm.dpi_rule_identifiers_for_host(@id, 16)
+      Manager.current.dpi_rule_identifiers_for_host(@id, 16)
     end
 
     def unassigned_dpi_rule_identifiers
-      @dsm.dpi_rule_identifiers_for_host(@id, 32)
+      Manager.current.dpi_rule_identifiers_for_host(@id, 32)
     end
 
     def recommended__dpi_rule_identifiers
-      @dsm.dpi_rule_identifiers_for_host(@id, 33)
+      Manager.current.dpi_rule_identifiers_for_host(@id, 33)
     end
 
     def unrecommended__dpi_rule_identifiers
-      @dsm.dpi_rule_identifiers_for_host(@id, 18)
+      Manager.current.dpi_rule_identifiers_for_host(@id, 18)
     end
 
     def all_dpi_rules
@@ -49,36 +71,100 @@ module DeepSecurity
       dpi_rules_from_identifiers(assigned_dpi_rule_identifiers())
     end
 
+    #@!endgroup
+
+    # @!group High-Level SOAP Wrapper
+
+    # Retrieves Hosts.
+    # @return [Array<Host>]
+    def self.all
+      dsm.hostRetrieveAll()
+    end
+
+    # Retrieves a Host by ID.
+    # @param [Integer] id Host ID
+    # @return [Host]
+    def self.find_by_id(id)
+      dsm.hostRetrieve(id)
+    end
+
+    # Retrieves a Host by name.
+    # @param [String] hostname hostname
+    # @return [Host]
+    def self.find_by_name(hostname)
+      dsm.hostRetrieveByName(hostname)
+    end
+    #@!endgroup
   end
 
   class Manager
 
-    def hosts
+    # @!group Low-Level SOAP Wrapper
+
+    # Retrieves Hosts.
+    #
+    # SYNTAX
+    #   HostTransport[] hostRetrieveAll(String sID)
+    #
+    # PARAMETERS
+    #   sID Authentication session identifier ID.
+    #
+    # RETURNS
+    #   HostTransport object array.
+    def hostRetrieveAll(sID = dsm.sID)
       cache.fetch(Host.cache_key(:all, :all)) do
-        request_array("host_retrieve_all", Host)
+        request_array(:host_retrieve_all, Host, nil,
+                      :sID => sID)
       end
     end
 
-    def host(id)
+    # Retrieves a Host by ID.
+    #
+    # SYNTAX
+    #   HostTransport hostRetrieve(int ID, String sID)
+    #
+    # PARAMETERS
+    #   ID Host ID.
+    #   sID Authentication session identifier ID.
+    #
+    # RETURNS
+    #   HostTransport object.
+    def hostRetrieve(id, sID = dsm.sID)
       cache.fetch(Host.cache_key(:id, id)) do
-        request_object("host_retrieve", Host, {:id => id})
+        request_object(:host_retrieve, Host, :id => id, :sID => sID)
       end
     end
 
-    def host_by_name(name)
-      cache.fetch(Host.cache_key(:name, name)) do
-        request_object("host_retrieve_by_name", Host, {:name => name})
+    # Retrieves a Host by name.
+    #
+    # SYNTAX
+    #   HostTransport hostRetrieveByName(String hostname, String sID)
+    #
+    # PARAMETERS
+    #   hostname Host name.
+    #   sID Authentication session identifier ID.
+    #
+    # RETURNS
+    #   HostTransport object.
+    def hostRetrieveByName(hostname, sID = dsm.sID)
+      cache.fetch(Host.cache_key(:name, hostname)) do
+        request_object(:host_retrieve_by_name, Host, :hostname => hostname, :sID => sID)
       end
     end
+
+    # @!endgroup
+
+    # @!group Low-Level Screenscraping Wrapper
 
     def security_profile
-      @dsm.security_progile(@security_profile_id)
+      Manager.current.security_progile(@security_profile_id)
     end
 
     def dpi_rule_identifiers_for_host(id, argument)
       payload_filters2_show_rules(id, argument)
       payload_filters2(:hostID => id, :arguments => argument).map { |hash| hash[:name].split(' ').first }
     end
+    # @!endgroup
 
   end
 
