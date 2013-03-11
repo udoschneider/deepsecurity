@@ -1,9 +1,10 @@
 module DeepSecurity
 
-  class HostGroup < DSMObject
+  class HostGroup < TransportObject
 
     attr_integer_accessor :id
-    attr_string_accessor :name, :description
+    attr_string_accessor :name
+    attr_string_accessor :description
     attr_boolean_accessor :external
     attr_string_accessor :external_id
     attr_integer_accessor :parent_group_id

@@ -497,7 +497,7 @@ module DeepSecurity
       "LAST_24_HOURS" => :last_24_hours,
       "LAST_7_DAYS" => :last_7_days,
       "CUSTOM_RANGE" => :custom_range,
-      "SPECIFIC_TIME" => :specific_time
+      "SPECIFIC_TIME" => :specificTime
   }
 
   # General filter operator enumeration. Used when filtering retrieved events by event ID that are greater than, less
@@ -528,6 +528,12 @@ module DeepSecurity
       "REALTIME" => :realtime,
       "MANUAL" => :manual,
       "SCHEDULED" => :scheduled
+  }
+
+  # Cloud Object Types.
+  EnumCloudObjectType = {
+      "AMAZON_VM" => :amazon_vm,
+      "VCLOUD_VM" => :vcloud_vm
   }
 
 end

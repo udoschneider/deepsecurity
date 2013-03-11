@@ -1,0 +1,186 @@
+#!/usr/bin/env ruby
+
+# 1.9 adds realpath to resolve symlinks; 1.8 doesn't
+# have this method, so we add it so we get resolved symlinks
+# and compatibility
+unless File.respond_to? :realpath
+  class File #:nodoc:
+    def self.realpath path
+      return realpath(File.readlink(path)) if symlink?(path)
+      path
+    end
+  end
+end
+$: << File.expand_path(File.dirname(File.realpath(__FILE__)) + '/../lib')
+
+require 'rubygems'
+require 'gli'
+
+require 'deepsecurity'
+require 'dsc'
+
+include GLI::App
+
+# config_file '.dsc.rc'
+
+program_desc 'DeepSecurity command line client'
+
+version Dsc::VERSION
+
+desc 'Enable client debug output. One of debug, info, warn, error or fatal'
+arg_name 'debug'
+flag [:d, :debug]
+
+desc 'Deep Security Manager'
+arg_name 'hostname'
+flag [:m, :manager]
+
+desc 'Webservice Port'
+arg_name 'port'
+default_value '4119'
+flag [:port]
+
+desc 'Tennat'
+arg_name 'tenat'
+default_value ''
+flag [:t, :tenant]
+
+desc 'Username'
+arg_name 'username'
+default_value 'MasterAdmin'
+flag [:u, :username]
+
+desc 'Password'
+arg_name 'password'
+flag [:p, :password]
+
+desc 'Output file'
+default_value '--'
+flag [:o, :outfile]
+
+desc 'Show progress'
+default_value false
+switch [:P]
+
+desc 'host detail'
+# arg_name 'Describe arguments to host_status here'
+command :host_detail do |c|
+
+  c.desc "list"
+  c.command :list do |list|
+
+    list.desc 'fields'
+    list.default_value Dsc::HostDetail.default_fields_string
+    list.flag [:fields]
+
+    list.action do |global_options, options, args|
+      Dsc.output_from_option(global_options[:o]) do |output|
+        Dsc::HostDetail.list(global_options[:m],
+                             global_options[:port].to_i,
+                             global_options[:t],
+                             global_options[:u],
+                             global_options[:p],
+                             :host_filter,
+                             Dsc::HostDetail.fields_from_string(options[:fields]),
+                             output, global_options[:P],
+                             Dsc.debug_level_from_option(global_options[:d]))
+      end
+    end
+  end
+
+  c.desc "schema"
+  c.command :schema do |schema|
+    schema.action do |global_options, options, args|
+      Dsc.output_from_option(global_options[:o]) do |output|
+        Dsc::HostDetail.print_schema(output)
+      end
+    end
+  end
+
+end
+
+desc 'anti malware events'
+# arg_name 'Describe arguments to host_status here'
+command :anti_malware_events do |c|
+
+  c.desc "list"
+  c.command :list do |list|
+
+    list.desc 'fields'
+    list.default_value Dsc::AntiMalwareEvent.default_fields_string
+    list.flag [:fields]
+
+    list.desc 'time filter'
+    list.long_desc "One of #{Dsc::AntiMalwareEvent.valid_time_filters.keys.join(', ')}"
+    list.default_value "last_day"
+    list.flag [:time_filter]
+
+    list.action do |global_options, options, args|
+      Dsc.output_from_option(global_options[:o]) do |output|
+        Dsc::AntiMalwareEvent.list(global_options[:m],
+                             global_options[:port].to_i,
+                             global_options[:t],
+                             global_options[:u],
+                             global_options[:p],
+                             :host_filter,
+                             Dsc::AntiMalwareEvent.parse_time_filter(options[:time_filter]),
+                             Dsc::AntiMalwareEvent.fields_from_string(options[:fields]),
+                             output, global_options[:P],
+                             Dsc.debug_level_from_option(global_options[:d]))
+      end
+    end
+  end
+
+  c.desc "schema"
+  c.command :schema do |schema|
+    schema.action do |global_options, options, args|
+      Dsc.output_from_option(global_options[:o]) do |output|
+        Dsc::AntiMalwareEvent.print_schema(output)
+      end
+    end
+  end
+
+end
+
+desc 'API Version'
+command :api_version do |c|
+
+  c.action do |global_options, options, args|
+    Dsc.output_from_option(global_options[:o]) do |output|
+      Dsc.print_api_version(global_options[:m], global_options[:port].to_i, global_options[:t], global_options[:u], global_options[:p], output, Dsc.debug_level_from_option(global_options[:d]))
+    end
+  end
+end
+
+desc 'Manager time'
+command :manager_time do |c|
+
+  c.action do |global_options, options, args|
+    Dsc.output_from_option(global_options[:o]) do |output|
+      Dsc.print_manager_time(global_options[:m], global_options[:port].to_i, global_options[:t], global_options[:u], global_options[:p], output, Dsc.debug_level_from_option(global_options[:d]))
+    end
+  end
+end
+
+pre do |global, command, options, args|
+  # Pre logic here
+  # Return true to proceed; false to abort and not call the
+  # chosen command
+  # Use skips_pre before a command to skip this block
+  # on that command only
+  true
+end
+
+post do |global, command, options, args|
+  # Post logic here
+  # Use skips_post before a command to skip this
+  # block on that command only
+end
+
+on_error do |exception|
+  # Error logic here
+  # return false to skip default error handling
+  true
+end
+
+exit run(ARGV)

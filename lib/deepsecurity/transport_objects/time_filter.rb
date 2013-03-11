@@ -3,11 +3,15 @@ module DeepSecurity
   # Used as search criteria limit the scope of objects returned by time related attributes, such as from, to, or a
   # specific time. If the type is set to EnumTimeFilterType CUSTOM_RANGE, then the rangeFrom and rangeTo property will
   # be required. If the EnumTimeFilterType SPECIFIC_TIME type is set, then the specifiicTime property will be required.
-  class TimeFilter < DSMObject
+  class TimeFilter < TransportObject
 
-    attr_datetime_accessor :range_from, :range_to, :specific_time
-    attr_integer_accessor :host_group_id, :host_id, :security_profile_id
-    attr_enum_accessor EnumTimeFilterType, :type
+    attr_datetime_accessor :rangeFrom
+    attr_datetime_accessor :rangeTo
+    attr_datetime_accessor :specificTime
+    # attr_integer_accessor :host_group_id
+    # attr_integer_accessor :host_id
+    # attr_integer_accessor :security_profile_id
+    attr_enum_accessor :type, EnumTimeFilterType
 
     def self.last_hour
       instance = self.new()
@@ -30,16 +34,20 @@ module DeepSecurity
     def self.custom_range(range)
       instance = self.new()
       instance.type = :custom_range
-      instance.range_from = range.first
-      instance.range_to = range.last
+      instance.rangeFrom = range.first
+      instance.rangeTo = range.last
       instance
     end
 
-    def self.specific_time(datetime)
+    def self.specificTime(datetime)
       instance = self.new()
-      instance.type = :specific_time
-      instance.specific_time = datetime
+      instance.type = :specificTime
+      instance.specificTime = datetime
       instance
+    end
+
+    def self.last_day
+      self.custom_range(((Date.today-1).to_time)..((Date.today).to_time-1))
     end
 
   end
