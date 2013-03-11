@@ -22,8 +22,8 @@ Gem::Specification.new do |gem|
   gem.add_dependency "gli"
 
   gem.add_dependency 'yard'
-  gem.add_dependency 'redcarpet'
-  gem.add_dependency 'github-markup'
+  # gem.add_dependency 'redcarpet'
+  # gem.add_dependency 'github-markup'
   gem.add_dependency 'progressbar'
 
 end
