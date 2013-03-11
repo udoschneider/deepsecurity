@@ -110,6 +110,11 @@ command :anti_malware_events do |c|
     list.default_value Dsc::AntiMalwareEvent.default_fields_string
     list.flag [:fields]
 
+    list.desc 'time filter'
+    list.long_desc "One of #{Dsc::AntiMalwareEvent.valid_time_filters.keys.join(', ')}"
+    list.default_value "last_day"
+    list.flag [:time_filter]
+
     list.action do |global_options, options, args|
       Dsc.output_from_option(global_options[:o]) do |output|
         Dsc::AntiMalwareEvent.list(global_options[:m],
@@ -118,7 +123,7 @@ command :anti_malware_events do |c|
                              global_options[:u],
                              global_options[:p],
                              :host_filter,
-                             :time_filter,
+                             Dsc::AntiMalwareEvent.parse_time_filter(options[:time_filter]),
                              Dsc::AntiMalwareEvent.fields_from_string(options[:fields]),
                              output, global_options[:P],
                              Dsc.debug_level_from_option(global_options[:d]))
