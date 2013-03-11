@@ -46,6 +46,10 @@ module DeepSecurity
       instance
     end
 
+    def self.last_day
+      self.custom_range(((Date.today-1).to_time)..((Date.today).to_time-1))
+    end
+
   end
 
 end
