@@ -119,7 +119,7 @@ module DeepSecurity
       @sID = tenant.blank? ? authenticate(username, password) : authenticate_tenant(tenant, username, password)
       dsm
     rescue Savon::SOAPFault => error
-      raise AuthenticationFailedException.new(error.to_hash[:fault][:detail][:exception_name].to_s)
+      raise AuthenticationFailedException.new(error.to_hash[:fault][:faultstring].to_s)
     end
 
     # Ends an authenticated user session. The Web Service client should end the authentication session in all exit cases.
