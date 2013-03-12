@@ -9,6 +9,18 @@ module Dsc
       nil
     end
 
+    def self.transport_class_name
+      class_name = transport_class.name.split('::').last || ''
+    end
+
+    def self.transport_class_string
+      transport_class_name.split(/(?=[A-Z])/).join(" ")
+    end
+
+    def self.command_symbol
+      transport_class_name.split(/(?=[A-Z])/).join("_").downcase.to_sym
+    end
+
     def self.schema
       result = {}
       transport_class.mappings.each { |key, value| result[key] = value.description }
@@ -26,6 +38,14 @@ module Dsc
       @output = global_options[:o]
     end
 
+    def self.valid_debug_levels
+      DeepSecurity::LOG_MAPPING.keys
+    end
+
+    def self.valid_debug_levels_string
+      valid_debug_levels.join(", ")
+    end
+
     def self.default_fields
       []
     end
@@ -36,6 +56,10 @@ module Dsc
 
     def self.valid_fields
       transport_class.defined_attributes.sort
+    end
+
+    def self.valid_fields_string
+      valid_fields.join(", ")
     end
 
     def parse_fields(string)

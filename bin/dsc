@@ -27,11 +27,11 @@ program_desc 'DeepSecurity command line client'
 
 version Dsc::VERSION
 
-desc 'Enable client debug output. One of debug, info, warn, error or fatal'
+desc "Enable client debug output. (One of #{Dsc::Command.valid_debug_levels_string})"
 arg_name 'debug'
 flag [:d, :debug]
 
-desc 'Deep Security Manager'
+desc 'Deep Security Manager Host'
 arg_name 'hostname'
 flag [:m, :manager]
 
@@ -40,7 +40,7 @@ arg_name 'port'
 default_value '4119'
 flag [:port]
 
-desc 'Tennat'
+desc 'Tenat Name'
 arg_name 'tenat'
 default_value ''
 flag [:t, :tenant]
@@ -54,77 +54,76 @@ desc 'Password'
 arg_name 'password'
 flag [:p, :password]
 
-desc 'Output file'
+desc 'Output filename'
 default_value '--'
 flag [:o, :outfile]
 
-desc 'Show progress'
+desc 'Show progressbar'
 default_value false
 switch [:P]
 
-desc 'host detail'
-# arg_name 'Describe arguments to host_status here'
-command :host_detail do |c|
+command_class = Dsc::HostDetailCommand
+desc "Access #{command_class.transport_class_string}s"
+command command_class.command_symbol do |c|
 
-  c.desc "list"
+  c.desc "List #{command_class.transport_class_string}s"
   c.command :list do |list|
 
-    list.desc 'fields'
-    list.default_value Dsc::HostDetailCommand.default_fields_string
+    list.desc "A comma separated list of fields to display. (Available fields: #{command_class.valid_fields_string})"
+    list.default_value command_class.default_fields_string
     list.flag [:fields]
 
     list.action do |global_options, options, args|
-      Dsc::HostDetailCommand.new(global_options).list(options, args)
+      command_class.new(global_options).list(options, args)
     end
   end
 
-  c.desc "schema"
+  c.desc "Show #{command_class.transport_class_string} schema"
   c.command :schema do |schema|
     schema.action do |global_options, options, args|
-      Dsc::HostDetailCommand.new(global_options).print_schema(options, args)
+      command_class.new(global_options).print_schema(options, args)
     end
   end
 
 end
 
-desc 'anti malware events'
-# arg_name 'Describe arguments to host_status here'
-command [:anti_malware_events, :anti_malware_event] do |c|
+command_class = Dsc::AntiMalwareEventCommand
+desc "Access #{command_class.transport_class_string}s"
+command command_class.command_symbol do |c|
 
-  c.desc "list"
+  c.desc "List #{command_class.transport_class_string}s"
   c.command :list do |list|
 
-    list.desc 'fields'
-    list.default_value Dsc::AntiMalwareEventCommand.default_fields_string
+    list.desc "A comma separated list of fields to display. (Available fields: #{command_class.valid_fields_string})"
+    list.default_value command_class.default_fields_string
     list.flag [:fields]
 
-    list.desc 'time filter'
-    list.long_desc "One of #{Dsc::AntiMalwareEventCommand.valid_time_filters_string}"
+    list.desc "A filter specifying the time intervall to query (One of #{command_class.valid_time_filters_string})"
     list.default_value "last_day"
     list.flag [:time_filter]
 
     list.action do |global_options, options, args|
-      Dsc::AntiMalwareEventCommand.new(global_options).list(options, args)
+      command_class.new(global_options).list(options, args)
     end
   end
 
   c.desc "schema"
   c.command :schema do |schema|
     schema.action do |global_options, options, args|
-      Dsc::AntiMalwareEventCommand.new(global_options).print_schema(options, args)
+      command_class.new(global_options).print_schema(options, args)
     end
   end
 
 end
 
-desc 'API Version'
+desc 'Display API Version'
 command :api_version do |c|
   c.action do |global_options, options, args|
     Dsc::Command.new(global_options).print_api_version(options, args)
   end
 end
 
-desc 'Manager time'
+desc 'Display Manager time'
 command :manager_time do |c|
 
   c.action do |global_options, options, args|
