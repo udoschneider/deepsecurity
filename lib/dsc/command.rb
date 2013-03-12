@@ -22,9 +22,7 @@ module Dsc
     end
 
     def self.schema
-      result = {}
-      transport_class.mappings.each { |key, value| result[key] = value.description }
-      result
+      transport_class.mappings
     end
 
     def initialize(global_options)
@@ -143,7 +141,7 @@ module Dsc
       output do |output|
         schema = self.class.schema()
         schema.keys.sort.each do |key|
-          output.puts "#{key}: #{schema[key]}"
+          output.puts "#{key} (#{schema[key].type_string}): #{schema[key].description}"
         end
       end
     end
