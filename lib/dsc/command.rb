@@ -148,6 +148,39 @@ module Dsc
       end
     end
 
+    def self.define_list_command(command)
+      command.desc "List #{self.transport_class_string}s"
+      command.command :list do |list|
+        define_fields_argument(list)
+        yield list if block_given?
+        list.action do |global_options, options, args|
+          self.new(global_options).list(options, args)
+        end
+      end
+    end
+
+    def self.define_schema_command(command)
+      command.desc "Show #{self.transport_class_string} schema"
+      command.command :schema do |schema|
+        yield schema if block_given?
+        schema.action do |global_options, options, args|
+          self.new(global_options).print_schema(options, args)
+        end
+      end
+    end
+
+    def self.define_time_filter_argument(command)
+      command.desc "A filter specifying the time interval to query (One of #{self.valid_time_filters_string})"
+      command.default_value "last_day"
+      command.flag [:time_filter]
+    end
+
+    def self.define_fields_argument(command)
+      command.desc "A comma separated list of fields to display. (Available fields: #{self.valid_fields_string})"
+      command.default_value self.default_fields_string
+      command.flag [:fields]
+    end
+
   end
 
 end
