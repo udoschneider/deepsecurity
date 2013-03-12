@@ -74,26 +74,14 @@ command :host_detail do |c|
     list.flag [:fields]
 
     list.action do |global_options, options, args|
-      Dsc.output_from_option(global_options[:o]) do |output|
-        Dsc::HostDetailCommand.list(global_options[:m],
-                             global_options[:port].to_i,
-                             global_options[:t],
-                             global_options[:u],
-                             global_options[:p],
-                             :host_filter,
-                             Dsc::HostDetailCommand.fields_from_string(options[:fields]),
-                             output, global_options[:P],
-                             Dsc.debug_level_from_option(global_options[:d]))
-      end
+      Dsc::HostDetailCommand.new(global_options).list(options, args)
     end
   end
 
   c.desc "schema"
   c.command :schema do |schema|
     schema.action do |global_options, options, args|
-      Dsc.output_from_option(global_options[:o]) do |output|
-        Dsc::HostDetailCommand.print_schema(output)
-      end
+      Dsc::HostDetailCommand.new(global_options).print_schema(options, args)
     end
   end
 
@@ -101,42 +89,29 @@ end
 
 desc 'anti malware events'
 # arg_name 'Describe arguments to host_status here'
-command :anti_malware_events do |c|
+command [:anti_malware_events, :anti_malware_event] do |c|
 
   c.desc "list"
   c.command :list do |list|
 
     list.desc 'fields'
-    list.default_value Dsc::AntiMalwareEvent.default_fields_string
+    list.default_value Dsc::AntiMalwareEventCommand.default_fields_string
     list.flag [:fields]
 
     list.desc 'time filter'
-    list.long_desc "One of #{Dsc::AntiMalwareEvent.valid_time_filters.keys.join(', ')}"
+    list.long_desc "One of #{Dsc::AntiMalwareEventCommand.valid_time_filters_string}"
     list.default_value "last_day"
     list.flag [:time_filter]
 
     list.action do |global_options, options, args|
-      Dsc.output_from_option(global_options[:o]) do |output|
-        Dsc::AntiMalwareEvent.list(global_options[:m],
-                             global_options[:port].to_i,
-                             global_options[:t],
-                             global_options[:u],
-                             global_options[:p],
-                             :host_filter,
-                             Dsc::AntiMalwareEvent.parse_time_filter(options[:time_filter]),
-                             Dsc::AntiMalwareEvent.fields_from_string(options[:fields]),
-                             output, global_options[:P],
-                             Dsc.debug_level_from_option(global_options[:d]))
-      end
+      Dsc::AntiMalwareEventCommand.new(global_options).list(options, args)
     end
   end
 
   c.desc "schema"
   c.command :schema do |schema|
     schema.action do |global_options, options, args|
-      Dsc.output_from_option(global_options[:o]) do |output|
-        Dsc::AntiMalwareEvent.print_schema(output)
-      end
+      Dsc::AntiMalwareEventCommand.new(global_options).print_schema(options, args)
     end
   end
 
@@ -144,11 +119,8 @@ end
 
 desc 'API Version'
 command :api_version do |c|
-
   c.action do |global_options, options, args|
-    Dsc.output_from_option(global_options[:o]) do |output|
-      Dsc.print_api_version(global_options[:m], global_options[:port].to_i, global_options[:t], global_options[:u], global_options[:p], output, Dsc.debug_level_from_option(global_options[:d]))
-    end
+    Dsc::Command.new(global_options).print_api_version(options, args)
   end
 end
 
@@ -156,9 +128,7 @@ desc 'Manager time'
 command :manager_time do |c|
 
   c.action do |global_options, options, args|
-    Dsc.output_from_option(global_options[:o]) do |output|
-      Dsc.print_manager_time(global_options[:m], global_options[:port].to_i, global_options[:t], global_options[:u], global_options[:p], output, Dsc.debug_level_from_option(global_options[:d]))
-    end
+    Dsc::Command.new(global_options).print_manager_time(options, args)
   end
 end
 
