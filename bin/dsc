@@ -27,11 +27,11 @@ program_desc 'DeepSecurity command line client'
 
 version Dsc::VERSION
 
-desc 'Enable client debug output. One of debug, info, warn, error or fatal'
+desc "Enable client debug output. (One of #{Dsc::Command.valid_debug_levels_string})"
 arg_name 'debug'
 flag [:d, :debug]
 
-desc 'Deep Security Manager'
+desc 'Deep Security Manager Host'
 arg_name 'hostname'
 flag [:m, :manager]
 
@@ -40,7 +40,7 @@ arg_name 'port'
 default_value '4119'
 flag [:port]
 
-desc 'Tennat'
+desc 'Tenat Name'
 arg_name 'tenat'
 default_value ''
 flag [:t, :tenant]
@@ -54,111 +54,40 @@ desc 'Password'
 arg_name 'password'
 flag [:p, :password]
 
-desc 'Output file'
+desc 'Output filename'
 default_value '--'
 flag [:o, :outfile]
 
-desc 'Show progress'
+desc 'Show progressbar'
 default_value false
 switch [:P]
 
-desc 'host detail'
-# arg_name 'Describe arguments to host_status here'
-command :host_detail do |c|
-
-  c.desc "list"
-  c.command :list do |list|
-
-    list.desc 'fields'
-    list.default_value Dsc::HostDetail.default_fields_string
-    list.flag [:fields]
-
-    list.action do |global_options, options, args|
-      Dsc.output_from_option(global_options[:o]) do |output|
-        Dsc::HostDetail.list(global_options[:m],
-                             global_options[:port].to_i,
-                             global_options[:t],
-                             global_options[:u],
-                             global_options[:p],
-                             :host_filter,
-                             Dsc::HostDetail.fields_from_string(options[:fields]),
-                             output, global_options[:P],
-                             Dsc.debug_level_from_option(global_options[:d]))
-      end
-    end
-  end
-
-  c.desc "schema"
-  c.command :schema do |schema|
-    schema.action do |global_options, options, args|
-      Dsc.output_from_option(global_options[:o]) do |output|
-        Dsc::HostDetail.print_schema(output)
-      end
-    end
-  end
-
+command_class = Dsc::HostDetailCommand
+desc "Access #{command_class.transport_class_string}s"
+command command_class.command_symbol do |c|
+  command_class.define_list_command(c)
+  command_class.define_schema_command(c)
 end
 
-desc 'anti malware events'
-# arg_name 'Describe arguments to host_status here'
-command :anti_malware_events do |c|
-
-  c.desc "list"
-  c.command :list do |list|
-
-    list.desc 'fields'
-    list.default_value Dsc::AntiMalwareEvent.default_fields_string
-    list.flag [:fields]
-
-    list.desc 'time filter'
-    list.long_desc "One of #{Dsc::AntiMalwareEvent.valid_time_filters.keys.join(', ')}"
-    list.default_value "last_day"
-    list.flag [:time_filter]
-
-    list.action do |global_options, options, args|
-      Dsc.output_from_option(global_options[:o]) do |output|
-        Dsc::AntiMalwareEvent.list(global_options[:m],
-                             global_options[:port].to_i,
-                             global_options[:t],
-                             global_options[:u],
-                             global_options[:p],
-                             :host_filter,
-                             Dsc::AntiMalwareEvent.parse_time_filter(options[:time_filter]),
-                             Dsc::AntiMalwareEvent.fields_from_string(options[:fields]),
-                             output, global_options[:P],
-                             Dsc.debug_level_from_option(global_options[:d]))
-      end
-    end
-  end
-
-  c.desc "schema"
-  c.command :schema do |schema|
-    schema.action do |global_options, options, args|
-      Dsc.output_from_option(global_options[:o]) do |output|
-        Dsc::AntiMalwareEvent.print_schema(output)
-      end
-    end
-  end
-
+command_class = Dsc::AntiMalwareEventCommand
+desc "Access #{command_class.transport_class_string}s"
+command command_class.command_symbol do |c|
+  command_class.define_list_command(c)
+  command_class.define_schema_command(c)
 end
 
-desc 'API Version'
+desc 'Display API Version'
 command :api_version do |c|
-
   c.action do |global_options, options, args|
-    Dsc.output_from_option(global_options[:o]) do |output|
-      Dsc.print_api_version(global_options[:m], global_options[:port].to_i, global_options[:t], global_options[:u], global_options[:p], output, Dsc.debug_level_from_option(global_options[:d]))
-    end
+    Dsc::Command.new(global_options).print_api_version(options, args)
   end
 end
 
-desc 'Manager time'
+desc 'Display Manager time'
 command :manager_time do |c|
 
   c.action do |global_options, options, args|
-    Dsc.output_from_option(global_options[:o]) do |output|
-      Dsc.print_manager_time(global_options[:m], global_options[:port].to_i, global_options[:t], global_options[:u], global_options[:p], output, Dsc.debug_level_from_option(global_options[:d]))
-    end
+    Dsc::Command.new(global_options).print_manager_time(options, args)
   end
 end
 
