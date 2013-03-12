@@ -70,18 +70,18 @@ command :host_detail do |c|
   c.command :list do |list|
 
     list.desc 'fields'
-    list.default_value Dsc::HostDetail.default_fields_string
+    list.default_value Dsc::HostDetailCommand.default_fields_string
     list.flag [:fields]
 
     list.action do |global_options, options, args|
       Dsc.output_from_option(global_options[:o]) do |output|
-        Dsc::HostDetail.list(global_options[:m],
+        Dsc::HostDetailCommand.list(global_options[:m],
                              global_options[:port].to_i,
                              global_options[:t],
                              global_options[:u],
                              global_options[:p],
                              :host_filter,
-                             Dsc::HostDetail.fields_from_string(options[:fields]),
+                             Dsc::HostDetailCommand.fields_from_string(options[:fields]),
                              output, global_options[:P],
                              Dsc.debug_level_from_option(global_options[:d]))
       end
@@ -92,7 +92,7 @@ command :host_detail do |c|
   c.command :schema do |schema|
     schema.action do |global_options, options, args|
       Dsc.output_from_option(global_options[:o]) do |output|
-        Dsc::HostDetail.print_schema(output)
+        Dsc::HostDetailCommand.print_schema(output)
       end
     end
   end

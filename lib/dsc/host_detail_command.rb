@@ -3,7 +3,7 @@ require "csv"
 
 module Dsc
 
-  class HostDetail < DscObject
+  class HostDetailCommand < DscCommand
 
 
     def self.transport_class

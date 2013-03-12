@@ -1,6 +1,6 @@
 module Dsc
 
-  class DscObject
+  class DscCommand
 
 
     def self.transport_class
