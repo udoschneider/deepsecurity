@@ -1,9 +1,6 @@
-require "progressbar"
-require "csv"
-
 module Dsc
 
-  class HostDetail < DscObject
+  class HostDetailCommand < Command
 
 
     def self.transport_class
@@ -33,30 +30,30 @@ module Dsc
           :platform,
           :host_type,
           # system domain or system group
-          :host_group_id
+          :host_group_id,
 
       # last/currently logged on account
       ]
-
-
     end
 
-    def self.list(hostname, port, tenat, username, password, host_filter, fields, output, progress_bar, debug)
-      Dsc.dsm_connect(hostname, port, tenat, username, password, debug) do |dsm|
-        hostFilter = DeepSecurity::HostFilter.all_hosts
-        progressBar = ProgressBar.new("host_status", 100) if progress_bar
-        hostDetails = DeepSecurity::HostDetail.find_all(hostFilter, :low)
-        progressBar.set(25) if progress_bar
-        csv = CSV.new(output)
-        csv << fields
-        hostDetails.each do |hostDetail|
-          progressBar.inc(75/hostDetails.size) if progress_bar
-          csv << fields.map { |attribute| hostDetail.instance_eval(attribute) }
+    def list(options, args)
+      fields = parse_fields(options[:fields])
+      output do |output|
+        authenticate do |dsm|
+          hostFilter = DeepSecurity::HostFilter.all_hosts
+          progressBar = ProgressBar.new("host_status", 100) if @show_progress_bar
+          hostDetails = DeepSecurity::HostDetail.find_all(hostFilter, :low)
+          progressBar.set(25) if @show_progress_bar
+          csv = CSV.new(output)
+          csv << fields
+          hostDetails.each do |hostDetail|
+            progressBar.inc(75/hostDetails.size) if @show_progress_bar
+            csv << fields.map { |attribute| hostDetail.instance_eval(attribute) }
+          end
+          progressBar.finish if @show_progress_bar
         end
-        progressBar.finish if progress_bar
       end
     end
-
   end
 
 end

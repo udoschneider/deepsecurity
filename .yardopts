@@ -1,4 +1,2 @@
 --markup-provider=redcarpet
 --markup=markdown
---no-private
---files lib/deepsecurity/transport_object.rb 

@@ -28,6 +28,10 @@ module SavonHelper
       logger.error { "#{self.class}##{__method__}() not implemented!" }
     end
 
+    def type_string
+      logger.error { "#{self.class}##{__method__}() not implemented!" }
+    end
+
   end
 
   class ArrayMapping < TypeMapping
@@ -70,7 +74,11 @@ module SavonHelper
 
     def object_klass
        @element_mapping.object_klass
-     end
+    end
+
+    def type_string
+      "Array<#{@element_mapping.type_string}>"
+    end
 
   end
 
@@ -84,6 +92,10 @@ module SavonHelper
       value.to_s
     end
 
+    def type_string
+      "bool"
+    end
+
   end
 
   class DatetimeMapping < TypeMapping
@@ -94,6 +106,10 @@ module SavonHelper
 
     def to_savon_data(value)
       value.to_datetime.to_s
+    end
+
+    def type_string
+      "datetime"
     end
 
   end
@@ -113,6 +129,10 @@ module SavonHelper
       @enum.key(value)
     end
 
+    def type_string
+      "enum"
+    end
+
   end
 
   class FloatMapping < TypeMapping
@@ -123,6 +143,10 @@ module SavonHelper
 
     def to_savon_data(value)
       value.to_s
+    end
+
+    def type_string
+      "float"
     end
 
   end
@@ -137,6 +161,9 @@ module SavonHelper
       value.to_s
     end
 
+    def type_string
+      "int"
+    end
   end
 
   class IPAddressMapping < TypeMapping
@@ -147,6 +174,10 @@ module SavonHelper
 
     def to_savon_data(value)
       value.to_s
+    end
+
+    def type_string
+      "IPAddress"
     end
 
   end
@@ -166,6 +197,10 @@ module SavonHelper
       @klass
     end
 
+    def type_string
+      "#{@klass}"
+    end
+
   end
 
   class StringMapping < TypeMapping
@@ -182,6 +217,10 @@ module SavonHelper
       String
     end
 
+    def type_string
+      "String"
+    end
+
   end
 
   class MissingMapping < TypeMapping
@@ -192,6 +231,10 @@ module SavonHelper
 
     def to_savon_data(value)
       value
+    end
+
+    def type_string
+      "MISSING"
     end
 
   end
@@ -205,6 +248,10 @@ module SavonHelper
 
     def object_klass
       @klass
+    end
+
+    def type_string
+      "HINT"
     end
 
   end
