@@ -1,0 +1,6 @@
+#!/bin/sh
+
+RUBY_VERSION="1.9.3-p392"
+GEM_VERSION="$1"
+
+./iscc dsc.iss /dgemVersion="$2" /drubyVersion="$RUBY_VERSION"
