@@ -17,12 +17,19 @@ module DeepSecurity
                        EnumHostFilterType,
                        "EnumHostFilterType to filter computers by"
 
+    # @!group High-Level SOAP Wrapper
+
+    # Return a new instance for all hosts.
+    # @return [HostFilter]
     def self.all_hosts
       instance = self.new()
       instance.type = :all_hosts
       instance
     end
 
+    # Return a new instance for hosts in the group defined by the given host_group_id.
+    # @param [Integer] host_group_id
+    # @return [HostFilter]
     def self.hosts_in_group(host_group_id)
       instance = self.new()
       instance.type = :hosts_in_group
@@ -30,6 +37,9 @@ module DeepSecurity
       instance
     end
 
+    # Return a new instance for hosts in the security profile defined by the given security_profile_id.
+    # @param [Integer] security_profile_id
+    # @return [HostFilter]
     def self.hosts_using_security_profile(security_profile_id)
       instance = self.new()
       instance.type = :hosts_using_security_profile
@@ -37,6 +47,9 @@ module DeepSecurity
       instance
     end
 
+    # Return a new instance for hosts in the group and their subgroups defined by the given host_group_id.
+    # @param [Integer] host_group_id
+    # @return [HostFilter]
     def self.hosts_in_group_and_all_subgroups(host_group_id)
       instance = self.new()
       instance.type = :hosts_in_group_and_all_subgroups
@@ -44,6 +57,9 @@ module DeepSecurity
       instance
     end
 
+    # Return a new instance for hosts defined by the given host_id.
+    # @param [Integer] host_id
+    # @return [HostFilter]
     def self.specific_host(host_id)
       instance = self.new()
       instance.type = :specific_host
@@ -51,11 +67,15 @@ module DeepSecurity
       instance
     end
 
+    # Return a new instance for "my" hosts.
+    # @return [HostFilter]
     def self.my_hosts
       instance = self.new()
       instance.type = :my_hosts
       instance
     end
+
+    # @!endgroup
 
   end
 
