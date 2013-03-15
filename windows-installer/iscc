@@ -1,0 +1,25 @@
+#!/bin/sh
+
+export 'VERSIONER_PERL_PREFER_32_BIT'='yes'
+export 'Apple_Ubiquity_Message'='/tmp/launch-WDwvc6/Apple_Ubiquity_Message'
+export 'FONT_ENCODINGS_DIRECTORY'='/Applications/CrossOver.app/Contents/SharedSupport/X11/lib/X11/fonts/encodings/encodings.dir'
+export 'Apple_PubSub_Socket_Render'='/tmp/launch-QqUjp3/Render'
+export 'CX_FONTCONFIG_PATH'='/Applications/CrossOver.app/Contents/SharedSupport/X11/etc/fonts'
+export 'DISPLAY'=':2'
+export 'TMPDIR'='/var/folders/b1/8rblxjkj3970_n00kc_lpqhr0000gp/T/'
+export 'DYLD_FALLBACK_LIBRARY_PATH'='/Applications/CrossOver.app/Contents/SharedSupport/X11/lib:/Users/udos/lib:/lib:/usr/lib:/usr/X11/lib'
+export 'COMMAND_MODE'='unix2003'
+export 'CX_BOTTLE_PATH'='/Users/udos/Library/Application Support/CrossOver/Bottles'
+export 'FONTCONFIG_ROOT'='/Applications/CrossOver.app/Contents/SharedSupport/X11'
+export 'MACOSX_DEPLOYMENT_TARGET'='10.8'
+export 'PYTHONPATH'='/Applications/CrossOver.app/Contents/SharedSupport/CrossOver/lib/python'
+export 'SSH_AUTH_SOCK'='/tmp/launch-cbyBYN/Listeners'
+export CX_BOTTLE='InnoSetup'
+export PATH="$PATH:"'/Applications/CrossOver.app/Contents/SharedSupport/CrossOver/bin'
+
+ISCC_BIN="C:\Program Files\Inno Setup 5\ISCC.EXE"
+ISS_FILE="$1"
+
+shift
+
+wine --cx-app "$ISCC_BIN" "$ISS_FILE" $*
