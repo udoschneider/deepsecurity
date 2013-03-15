@@ -8,7 +8,7 @@ task :github_and_tag do
 end
 
 desc "Build Windows Installer"
-task :windows_installer do
+task :windows_installer => :build do
   require "dsc"
   RUBY_INSTALLER_VERSION = "1.9.3-p392"
   GEM_VERSION = Dsc::VERSION.to_s
