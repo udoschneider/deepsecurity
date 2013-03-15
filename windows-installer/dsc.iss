@@ -1,5 +1,5 @@
-#define MyAppVer "0.0.16.0" ; define variable
-#define MyAppVerText "0.0.16.0" ; define variable
+#define MyAppVer gemVersion+".0"
+#define MyAppVerText gemVersion+".0"
 #define MyAppCopyright "Udo Schneider <Udo_Schneider@trendmicro.de>" 
 #define MyAppCompany "Trend Micro" 
 #define MyAppName "dsc" 
@@ -17,7 +17,7 @@ InternalCompressLevel=ultra
 ; OutputDir={#BaseDir}
 ; SourceDir={#BaseDir}
 SolidCompression=true
-AppCopyright=Copyright © {#MyAppCopyright}
+AppCopyright=Copyright ï¿½ {#MyAppCopyright}
 AppName={#MyAppName}
 AppVerName={#MyAppName} {#MyAppVerText}
 ShowLanguageDialog=yes
