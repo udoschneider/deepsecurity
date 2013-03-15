@@ -374,9 +374,9 @@ module SavonHelper
     end
 
     # @macro [attach] hint_object_accessor
-    #   @!attribute [rw] $3
-    #     $2
-    #     @return [String]
+    #   @!attribute [rw] $4
+    #     $3
+    #     @return [$2]
     # Define a new "hint" for documentation purposes. Please note, that the method has to be define elsewhere!
     # @param accessor [Symbol] The accessor to be created
     # @param description [String] The description for this accessor
