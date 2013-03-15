@@ -17,15 +17,8 @@ export 'SSH_AUTH_SOCK'='/tmp/launch-cbyBYN/Listeners'
 export CX_BOTTLE='InnoSetup'
 export PATH="$PATH:"'/Applications/CrossOver.app/Contents/SharedSupport/CrossOver/bin'
 
-function absolutize {
-	test -e "${1}" && ABSPATH=`cd \`dirname "${1}"\`; pwd`"/"`basename "${1}"`
-	test -n "${ABSPATH}" && echo ${ABSPATH}
-}
-
-
-# WINE_BIN="/Users/udos/Library/Application Support/CrossOver/CrossOver 12.1.1.26821/CrossOver.app/Contents/SharedSupport/CrossOver/bin/wine"
 ISCC_BIN="C:\Program Files\Inno Setup 5\ISCC.EXE"
-ISS_FILE="$( absolutize $1 )"
+ISS_FILE="$1"
 
 shift
 
