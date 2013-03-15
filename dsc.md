@@ -122,17 +122,17 @@ If you don't specify an explicit list of fields, the following fields are used b
 Please note that if you don't specify a time filter all events of the previous day (00:00:00UTC-23:59:59UTC).
 
 
-# COMMAND OPTIONS
+## COMMAND OPTIONS
 
-## FIELDS
+### FIELDS
 
 The `--fields` option takes a list of comma-separated values of fields to display. You can check available fields usind the `schema` subcommand.
 You can also get further output by separating method calls with a dot `.`. E.g.: If the field itself is called `host_name` you can also
 specify `host_name.size` which would call the `size()` method returning the length of the String.
 
-## TIME FILTER
+### TIME FILTER
 
-One of
+The `--time_filter` option allows you to specify the time to be queried. One of
 
 * last_hour
 * last_24_hours
@@ -141,5 +141,15 @@ One of
 
 Please note the difference between `last_24_hours` and `last_day`. `last_24_hours` returns events from the current time yesterday to now.
 `last_day` returns events from yesterday 00:00:00UTC to 23:59:59UTC.
+
+# TIPS & TRICKS
+
+## DEFINE ROLE/USER FOR SOAP ACCESS
+
+TODO
+
+## UNLOCK A LOCKED ACCOUNT
+
+TODO
 
 
