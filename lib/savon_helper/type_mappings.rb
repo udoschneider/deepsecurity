@@ -15,7 +15,7 @@ module SavonHelper
     # @!group Converting
 
     # Convert from Savon data to Ruby value
-    # @param [Object] data Savon data
+    # @param [Hash] data Savon data
     # @return [Object]
     def from_savon_data(data)
       logger.error { "#{self.class}##{__method__}(#{data.inspect}) not implemented!" }
@@ -31,7 +31,7 @@ module SavonHelper
     # @!endgroup
 
     # Return the description
-    # @!return [String]
+    # @return [String]
     def description
       @description
     end
@@ -49,7 +49,7 @@ module SavonHelper
     end
 
     # The current logger
-    # @returm [Logger]
+    # @return [Logger]
     def logger
       DeepSecurity::logger
     end
@@ -58,19 +58,24 @@ module SavonHelper
 
   class ArrayMapping < TypeMapping
 
-    def self.from_savon_data(klass, data)
+
+    # Convert the given Savon data to an Array consisting of elements of class klass
+    # @param [TypeMapping] element_mapping TypeMapping for elements
+    # @param [Hash,Array] data Savon Data
+    # @return [Array<Object>]
+    def self.from_savon_data(element_mapping, data)
       return [] if data.blank?
       result = []
       if data.is_a?(Array)
         data.each do |element|
-          result << klass.from_savon_data(element)
+          result << element_mapping.from_savon_data(element)
         end
       elsif data.is_a?(Hash)
         item = data[:item]
         if item.nil?
-          result << klass.from_savon_data(data)
+          result << element_mapping.from_savon_data(data)
         else
-          result = from_savon_data(klass, item)
+          result = from_savon_data(element_mapping, item)
         end
       else
         raise "Unknown Array mapping"
@@ -78,26 +83,34 @@ module SavonHelper
       result
     end
 
+    # A new instance of TypeMapping with description
+    # @param [TypeMapping] element_mapping A TypeMapping for elements
+    # @param [String] description
+    # @return [ArrayMapping]
     def initialize(element_mapping, description='')
       super(description)
       @element_mapping = element_mapping
     end
 
+    # @!group Converting
+
+    # Convert from Savon data to Ruby value
+    # @param [Hash] data Savon data
+    # @return [Array]
     def from_savon_data(data)
       self.class.from_savon_data(@element_mapping, data)
     end
 
-    def _from_savon_data(data)
-      return @element_mapping.from_savon_data(data[:item]) if data[:item].is_a?(Hash)
-      data[:item].map do |each|
-        @element_mapping.from_savon_data(each)
-      end
-    end
+    # @!endgroup
 
+    # Return the class represented by the mapping.
+    # @return [Class]
     def object_klass
       @element_mapping.object_klass
     end
 
+    # Return the class description represented by the mapping.
+    # @return [String]
     def type_string
       "Array<#{@element_mapping.type_string}>"
     end
