@@ -2,34 +2,56 @@
 
 module SavonHelper
 
+  # A TypeMappng class is responsible for converting between Savon primitive types and compound Ruby Types
   class TypeMapping
 
-    def logger
-      DeepSecurity::logger
-    end
-
+    # A new instance of TypeMapping with description
+    # @param [String] description
+    # @return [TypeMapping]
     def initialize(description='')
       @description = description
     end
 
+    # @!group Converting
+
+    # Convert from Savon data to Ruby value
+    # @param [Object] data Savon data
+    # @return [Object]
     def from_savon_data(data)
       logger.error { "#{self.class}##{__method__}(#{data.inspect}) not implemented!" }
     end
 
+    # Convert from Ruby value type to Savon data
+    # @param [Object] value Ruby value
+    # @return [Object]
     def to_savon_data(value)
       logger.error { "#{self.class}##{__method__}(#{value.inspect}) not implemented!" }
     end
 
+    # @!endgroup
+
+    # Return the description
+    # @!return [String]
     def description
       @description
     end
 
+    # Return the class represented by the mapping.
+    # @return [Class]
     def object_klass
       logger.error { "#{self.class}##{__method__}() not implemented!" }
     end
 
+    # Return the class description represented by the mapping.
+    # @return [String]
     def type_string
       logger.error { "#{self.class}##{__method__}() not implemented!" }
+    end
+
+    # The current logger
+    # @returm [Logger]
+    def logger
+      DeepSecurity::logger
     end
 
   end
@@ -73,7 +95,7 @@ module SavonHelper
     end
 
     def object_klass
-       @element_mapping.object_klass
+      @element_mapping.object_klass
     end
 
     def type_string
