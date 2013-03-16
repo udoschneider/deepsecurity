@@ -119,14 +119,26 @@ module SavonHelper
 
   class BooleanMapping < TypeMapping
 
+    # @!group Converting
+
+    # Convert from Savon data to Ruby Boolean
+    # @param [Hash] data Savon data
+    # @return [Boolean]
     def from_savon_data(data)
       data.to_s == "true"
     end
 
+    # Convert from Ruby Boolean type to Savon data
+    # @param [Object] value Boolean
+    # @return [Hash]
     def to_savon_data(value)
       value.to_s
     end
 
+    # @!endgroup
+
+    # Return the class description represented by the mapping.
+    # @return [String]
     def type_string
       "bool"
     end
