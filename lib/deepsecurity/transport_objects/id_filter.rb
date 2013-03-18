@@ -8,9 +8,17 @@ module DeepSecurity
   # uniquely identify which events have already been retrieved. This way retrieval of duplicate events can be avoided.
   class IDFilter < TransportObject
 
-    attr_integer_accessor :id
-    attr_enum_accessor :operator, EnumOperator
+    attr_integer_accessor :id,
+                          "Event transport objects ID to filter by."
+    attr_enum_accessor :operator,
+                       EnumOperator,
+                       "EnumOperator to used to apply the id property, e.g., greater than, less than, and equal."
 
+    # @!group High-Level SOAP Wrapper
+
+    # Return a new instance for events with the given event id.
+    # @param [Integer] id
+    # @return [IDFilter]
     def self.equals(id)
       instance = self.new()
       instance.operator = :equals
@@ -18,6 +26,9 @@ module DeepSecurity
       instance
     end
 
+    # Return a new instance for events with event ids less than the given event id.
+    # @param [Integer] id
+    # @return [IDFilter]
     def self.less_than(id)
       instance = self.new()
       instance.operator = :less_than
@@ -25,12 +36,17 @@ module DeepSecurity
       instance
     end
 
+    # Return a new instance for events with event ids greater than the given event id.
+    # @param [Integer] id
+    # @return [IDFilter]
     def self.greater_than(id)
       instance = self.new()
       instance.operator = :greater_than
       instance.id =id
       instance
     end
+
+    # @!endgroup
 
   end
 

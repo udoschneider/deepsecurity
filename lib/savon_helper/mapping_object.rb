@@ -17,13 +17,13 @@ module SavonHelper
     end
 
     # Helper Method deserializing the SOAP response into an object
-    def request_object(method_name, object_class, soap_body={})
-      object_class.from_savon_data(self, send_soap(method_name, soap_body))
+    def request_object(method_name, object_class, arguments={})
+      object_class.from_savon_data(send_soap(method_name, arguments))
     end
 
     # Helper Method deserializing the SOAP response into an object
-    def request_array(method_name, object_class, collection_name = nil, soap_body={})
-      data = send_soap(method_name, soap_body)
+    def request_array(method_name, object_class, collection_name = nil, arguments={})
+      data = send_soap(method_name, arguments)
       data = data[collection_name] unless collection_name.blank?
       SavonHelper::ArrayMapping.new(SavonHelper::ObjectMapping.new(object_class)).from_savon_data(data)
     end
@@ -374,9 +374,9 @@ module SavonHelper
     end
 
     # @macro [attach] hint_object_accessor
-    #   @!attribute [rw] $3
-    #     $2
-    #     @return [String]
+    #   @!attribute [rw] $4
+    #     $3
+    #     @return [$2]
     # Define a new "hint" for documentation purposes. Please note, that the method has to be define elsewhere!
     # @param accessor [Symbol] The accessor to be created
     # @param description [String] The description for this accessor

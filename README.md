@@ -1,6 +1,7 @@
-# Deepsecurity
+# deepsecurity
 
-TODO: Write a gem description
+Provide a Ruby Wrapper for Trend Micro's DeepSecurity SOAP API. Also includes a command line binary `dsc` which exposes
+some of the functionality to shell scripts.
 
 ## Installation
 
