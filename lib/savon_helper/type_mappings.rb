@@ -130,7 +130,7 @@ module SavonHelper
     end
 
     def type_string
-      "enum"
+      "enum<#{@enum.values.join(', ')}>"
     end
 
   end
