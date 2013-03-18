@@ -17,13 +17,13 @@ module SavonHelper
     end
 
     # Helper Method deserializing the SOAP response into an object
-    def request_object(method_name, object_class, soap_body={})
-      object_class.from_savon_data(self, send_soap(method_name, soap_body))
+    def request_object(method_name, object_class, arguments={})
+      object_class.from_savon_data(send_soap(method_name, arguments))
     end
 
     # Helper Method deserializing the SOAP response into an object
-    def request_array(method_name, object_class, collection_name = nil, soap_body={})
-      data = send_soap(method_name, soap_body)
+    def request_array(method_name, object_class, collection_name = nil, arguments={})
+      data = send_soap(method_name, arguments)
       data = data[collection_name] unless collection_name.blank?
       SavonHelper::ArrayMapping.new(SavonHelper::ObjectMapping.new(object_class)).from_savon_data(data)
     end

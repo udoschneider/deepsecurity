@@ -30,7 +30,7 @@ module Dsc
           :platform,
           :host_type,
           # system domain or system group
-          :host_group_id,
+          :host_group_name,
 
       # last/currently logged on account
       ]
@@ -48,7 +48,13 @@ module Dsc
           csv << fields
           hostDetails.each do |hostDetail|
             progressBar.inc(75/hostDetails.size) if @show_progress_bar
-            csv << fields.map { |attribute| hostDetail.instance_eval(attribute) }
+            csv << fields.map do |attribute|
+              begin
+                hostDetail.instance_eval(attribute)
+              rescue => e
+                "ERROR (#{e.message}"
+              end
+            end
           end
           progressBar.finish if @show_progress_bar
         end
