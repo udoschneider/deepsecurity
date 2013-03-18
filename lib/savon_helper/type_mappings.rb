@@ -56,6 +56,7 @@ module SavonHelper
 
   end
 
+  # ArrayMapping maps Savon data to Ruby Arrays
   class ArrayMapping < TypeMapping
 
 
@@ -117,6 +118,7 @@ module SavonHelper
 
   end
 
+    # BooleanMapping maps Savon data to Ruby Booleans.
   class BooleanMapping < TypeMapping
 
     # @!group Converting
