@@ -86,6 +86,20 @@ module Dsc
       filter
     end
 
+    def self.valid_detail_levels
+      EnumHostDetailLevel.keys()
+    end
+
+    def self.valid_detail_levels_string
+      valid_detail_levels.join(", ")
+    end
+
+    def parse_detail_level(string)
+      detail_level = EnumHostDetailLevel[string.upcase.strip]
+      return detail_level unless detail_level.nil?
+      return EnumHostDetailLevel["LOW"]
+    end
+
 
     def debug_level_from_option(option)
       return nil if option.blank?
