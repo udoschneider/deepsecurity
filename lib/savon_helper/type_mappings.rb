@@ -300,7 +300,7 @@ module SavonHelper
     end
 
     def type_string
-      "HINT"
+      "#{@klass}"
     end
 
   end
