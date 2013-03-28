@@ -38,11 +38,12 @@ module Dsc
 
     def list(options, args)
       fields = parse_fields(options[:fields])
+      detail_level = parse_detail_level(options[:detail_level])
       output do |output|
         authenticate do |dsm|
           hostFilter = DeepSecurity::HostFilter.all_hosts
           progressBar = ProgressBar.new("host_status", 100) if @show_progress_bar
-          hostDetails = DeepSecurity::HostDetail.find_all(hostFilter, :low)
+          hostDetails = DeepSecurity::HostDetail.find_all(hostFilter, detail_level)
           progressBar.set(25) if @show_progress_bar
           csv = CSV.new(output)
           csv << fields
@@ -60,6 +61,13 @@ module Dsc
         end
       end
     end
+
+    def self.define_list_command(c)
+      super(c) do |list|
+        define_detail_level_argument(list)
+      end
+    end
+
   end
 
 end
