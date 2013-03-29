@@ -11,7 +11,7 @@ module Dsc
       DeepSecurity::HostDetail
     end
 
-    # @group Fields flag
+    # @!group Fields flag
 
     # Default fields if no argument is given
     # @return [Array<String>] Default fields if no argument is given
@@ -44,9 +44,9 @@ module Dsc
       ]
     end
 
-    # @endgroup
+    # @!endgroup
 
-    # @group Command definitions
+    # @!group Command definitions
 
     # Define all commands for this available for this (sub) command_context
     # @param command_context [CLI::App] The current context of the command.
@@ -70,9 +70,9 @@ module Dsc
       end
     end
 
-    # @endgroup
+    # @!endgroup
 
-    # @group Command Implementations
+    # @!group Command Implementations
 
     # `list` Implementation.
     # List all entries of the `transport_class` type according to given filter parameters.
@@ -107,7 +107,7 @@ module Dsc
       end
     end
 
-    # @endgroup
+    # @!endgroup
   end
 
 end

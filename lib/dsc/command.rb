@@ -15,7 +15,7 @@ module Dsc
       nil
     end
 
-    # @group Helper methods
+    # @!group Helper methods
 
     # Transport class name without namespace
     # @return [String] Transport class name without namespace
@@ -41,7 +41,7 @@ module Dsc
       transport_class.mappings
     end
 
-    # @endgroup
+    # @!endgroup
 
     # @param [Hash] global_options Global options passed to the `dsc` command_context.
     # @option global_options [String] :manager The hostname of the DeepSecurity Manager.
@@ -63,7 +63,7 @@ module Dsc
       @output = global_options[:outfile]
     end
 
-    # @group Helper methods
+    # @!group Helper methods
 
     # Provide an open output  while executing the block.
     # @yieldparam output [IO] Opened IO
@@ -105,9 +105,9 @@ module Dsc
       end
     end
 
-    # @endgroup
+    # @!endgroup
 
-    # @group Misc global flags/options definitions
+    # @!group Misc global flags/options definitions
 
     # Define flags
     # @return [void]
@@ -197,9 +197,9 @@ module Dsc
                              :default_value => false
     end
 
-    # @endgroup
+    # @!endgroup
 
-    # @group Debug Level flag
+    # @!group Debug Level flag
 
     # Valid debug levels
     # @return [Array<String>] Valid debug levels
@@ -229,9 +229,9 @@ module Dsc
                            :arg_name => 'debug_level'
     end
 
-    # @endgroup
+    # @!endgroup
 
-    # @group Fields flag
+    # @!group Fields flag
 
     # Default fields if no argument is given
     # @note Needs to be overridden by subclass
@@ -281,9 +281,9 @@ module Dsc
                            :default_value => self.default_fields_string
     end
 
-    # @endgroup
+    # @!endgroup
 
-    # @group Time filter flag
+    # @!group Time filter flag
 
     # Valid timefilter mapping (symbol to instance)
     # @return [Hash<Symbol => DeepSecurity::TimeFilter>] Valid timefilter mapping
@@ -318,9 +318,9 @@ module Dsc
                            :default_value => "last_day"
     end
 
-    # @endgroup
+    # @!endgroup
 
-    # @group Detail level flag
+    # @!group Detail level flag
 
     # Valid detail levels
     # @return [Array<String>] Valid detail levels
@@ -350,9 +350,9 @@ module Dsc
                            :default_value => "low"
     end
 
-    # @endgroup
+    # @!endgroup
 
-    # @group Command definitions
+    # @!group Command definitions
 
     # @abstract Define all commands for this available for this (sub) command_context
     # @param command_context [CLI::App] The current context of the command.
@@ -423,9 +423,9 @@ module Dsc
       end
     end
 
-    # @endgroup
+    # @!endgroup
 
-    # @group Command Implementations
+    # @!group Command Implementations
 
     # `api_version` Implementation.
     # Display the API version in use by the DeepSecurity Manager.
@@ -470,7 +470,7 @@ module Dsc
       end
     end
 
-    # @endgroup
+    # @!endgroup
 
   end
 

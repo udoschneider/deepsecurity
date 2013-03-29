@@ -30,7 +30,7 @@ module SavonHelper
 
     # @!endgroup
 
-    # @group Mapping
+    # @!group Mapping
 
     # Return an initialized instance with the values from the (type-converted) hash. Store the instance in cache
     # if cacheable.
@@ -133,7 +133,7 @@ module SavonHelper
       return mapping.to_savon_data(value)
     end
 
-    # @group DSL to define attributes mapping
+    # @!group DSL to define attributes mapping
 
     # @macro [attach] attr_boolean_accessor
     #   @!attribute [rw] $3
@@ -407,7 +407,7 @@ module SavonHelper
       end
     end
 
-    # @endgroup
+    # @!endgroup
 
   end
 
