@@ -45,7 +45,7 @@ module DeepSecurity
     end
 
     # Return a new instance for the given datetime range.
-    # @param [Range] datetime_range A range of two datetimes
+    # @param datetime_range [Range] A range of two datetimes
     # @return [TimeFilter]
     def self.custom_range(datetime_range)
       instance = self.new()
@@ -56,7 +56,7 @@ module DeepSecurity
     end
 
     # Return a new instance for the given datetime.
-    # @param [DateTime] datetime
+    # @param datetime [DateTime]
     # @return [TimeFilter]
     def self.specificTime(datetime)
       instance = self.new()

@@ -6,7 +6,7 @@ module SavonHelper
   class TypeMapping
 
     # A new instance of TypeMapping with description
-    # @param [String] description
+    # @param description [String]
     # @return [TypeMapping]
     def initialize(description='')
       @description = description
@@ -15,14 +15,14 @@ module SavonHelper
     # @!group Converting
 
     # Convert from Savon data to Ruby value
-    # @param [Hash] data Savon data
+    # @param data [Hash]  Savon data
     # @return [Object]
     def from_savon_data(data)
       logger.error { "#{self.class}##{__method__}(#{data.inspect}) not implemented!" }
     end
 
     # Convert from Ruby value type to Savon data
-    # @param [Object] value Ruby value
+    # @param value [Object]  Ruby value
     # @return [Object]
     def to_savon_data(value)
       logger.error { "#{self.class}##{__method__}(#{value.inspect}) not implemented!" }
@@ -61,8 +61,8 @@ module SavonHelper
 
 
     # Convert the given Savon data to an Array consisting of elements of class klass
-    # @param [TypeMapping] element_mapping TypeMapping for elements
-    # @param [Hash,Array] data Savon Data
+    # @param element_mapping [TypeMapping]  TypeMapping for elements
+    # @param data [Hash,Array]  Savon Data
     # @return [Array<Object>]
     def self.from_savon_data(element_mapping, data)
       return [] if data.blank?
@@ -85,8 +85,8 @@ module SavonHelper
     end
 
     # A new instance of TypeMapping with description
-    # @param [TypeMapping] element_mapping A TypeMapping for elements
-    # @param [String] description
+    # @param element_mapping [TypeMapping]  A TypeMapping for elements
+    # @param description [String]
     # @return [ArrayMapping]
     def initialize(element_mapping, description='')
       super(description)
@@ -96,7 +96,7 @@ module SavonHelper
     # @!group Converting
 
     # Convert from Savon data to Ruby value
-    # @param [Hash] data Savon data
+    # @param data [Hash]  Savon data
     # @return [Array]
     def from_savon_data(data)
       self.class.from_savon_data(@element_mapping, data)
@@ -118,20 +118,20 @@ module SavonHelper
 
   end
 
-    # BooleanMapping maps Savon data to Ruby Booleans.
+  # BooleanMapping maps Savon data to Ruby Booleans.
   class BooleanMapping < TypeMapping
 
     # @!group Converting
 
     # Convert from Savon data to Ruby Boolean
-    # @param [Hash] data Savon data
+    # @param data [Hash]  Savon data
     # @return [Boolean]
     def from_savon_data(data)
       data.to_s == "true"
     end
 
     # Convert from Ruby Boolean type to Savon data
-    # @param [Object] value Boolean
+    # @param value [Object]  Boolean
     # @return [Hash]
     def to_savon_data(value)
       value.to_s

@@ -129,8 +129,8 @@ module DeepSecurity
     # @!group High-Level SOAP Wrapper
 
     # Return all HostDetails matching the hosts filter with the given detail level
-    # @param [HostFilter] host_filter
-    # @param [EnumHostDetailLevel] detail_level
+    # @param host_filter [HostFilter]
+    # @param detail_level [EnumHostDetailLevel]
     # @return [Array<HostDetail>]
     def self.find_all(host_filter, detail_level)
       dsm.hostDetailRetrieve(host_filter, detail_level)

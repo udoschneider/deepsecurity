@@ -36,14 +36,14 @@ module DeepSecurity
     end
 
     # Retrieves a HostGroup by ID.
-    # @param [Integer] id HostGroup ID
+    # @param id [Integer] HostGroup ID
     # @return [HostGroup]
     def self.find(id)
       dsm.hostGroupRetrieve(id)
     end
 
     # Retrieves a HostGroup by name.
-    # @param [String] hostname hostname
+    # @param hostname [String] hostname
     # @return [HostGroup]
     def self.find_by_name(hostname)
       dsm.hostGroupRetrieveByName(hostname)
@@ -100,7 +100,7 @@ module DeepSecurity
     #
     # PARAMETERS
     #   Name  Identifying Host Group name.
-    #   sID Authentication session identifier ID.
+    #   sID   Authentication session identifier ID.
     #
     # RETURNS
     #   HostGroupTransport object.

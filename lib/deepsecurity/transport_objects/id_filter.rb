@@ -17,7 +17,7 @@ module DeepSecurity
     # @!group High-Level SOAP Wrapper
 
     # Return a new instance for events with the given event id.
-    # @param [Integer] id
+    # @param id [Integer]
     # @return [IDFilter]
     def self.equals(id)
       instance = self.new()
@@ -27,7 +27,7 @@ module DeepSecurity
     end
 
     # Return a new instance for events with event ids less than the given event id.
-    # @param [Integer] id
+    # @param id [Integer]
     # @return [IDFilter]
     def self.less_than(id)
       instance = self.new()
@@ -37,7 +37,7 @@ module DeepSecurity
     end
 
     # Return a new instance for events with event ids greater than the given event id.
-    # @param [Integer] id
+    # @param id [Integer]
     # @return [IDFilter]
     def self.greater_than(id)
       instance = self.new()

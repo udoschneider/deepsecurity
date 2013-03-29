@@ -16,7 +16,7 @@ module DeepSecurity
       :fatal => Logger::FATAL
   }
 
-  # This class  represents the DeepSecurity Manager. It's the entry point for all further actions
+  # This class represents the DeepSecurity Manager. It's the entry point for all further actions
   class Manager <DSObject
 
     @@current = nil
@@ -101,9 +101,9 @@ module DeepSecurity
     end
 
     # Set connection parameters
-    # @param [String] hostname host to connect to
-    # @param [Integer] port port to connect to
-    # @param [LOG_MAPPING] log_level Log Level
+    # @param hostname [String] host to connect to
+    # @param port [Integer] port to connect to
+    # @param log_level [LOG_MAPPING] Log Level
     def self.server(hostname, port=4119, log_level=nil)
       dsm = self.new(hostname, port, log_level)
       dsm.logger.level = LOG_MAPPING[log_level] unless log_level.nil?
@@ -111,9 +111,9 @@ module DeepSecurity
     end
 
     # Authenticates a user within the given tenant, and returns a session ID for use when calling other methods of Manager. When no longer required, the session should be terminated by calling endSession.
-    # @param [String] tenant
-    # @param [String] username
-    # @param [String] password
+    # @param tenant [String]
+    # @param username [String]
+    # @param password [String]
     # @return [Manager] The current manager
     def connect(tenant, username, password)
       @sID = tenant.blank? ? authenticate(username, password) : authenticate_tenant(tenant, username, password)

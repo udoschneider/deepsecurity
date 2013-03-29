@@ -43,7 +43,7 @@ module Dsc
 
     # @!endgroup
 
-    # @param [Hash] global_options Global options passed to the `dsc` command_context.
+    # @param global_options [Hash] Global options passed to the `dsc` command_context.
     # @option global_options [String] :manager The hostname of the DeepSecurity Manager.
     # @option global_options [String] :port The TCP port to use.
     # @option global_options [String, nil] :tenant The tenant name or nil.
@@ -65,7 +65,7 @@ module Dsc
 
     # @!group Helper methods
 
-    # Provide an open output  while executing the block.
+    # Provide an open output while executing the block.
     # @yieldparam output [IO] Opened IO
     # @yield [output] Gives the output to the block
     # @return [void]
