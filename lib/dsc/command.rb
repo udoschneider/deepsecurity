@@ -65,7 +65,7 @@ module Dsc
 
     # @!group Helper methods
 
-    # Provide an open output  while executing the block.
+    # Provide an open output while executing the block.
     # @yieldparam output [IO] Opened IO
     # @yield [output] Gives the output to the block
     # @return [void]

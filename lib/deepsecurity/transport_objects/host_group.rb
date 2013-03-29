@@ -100,7 +100,7 @@ module DeepSecurity
     #
     # PARAMETERS
     #   Name  Identifying Host Group name.
-    #   sID Authentication session identifier ID.
+    #   sID   Authentication session identifier ID.
     #
     # RETURNS
     #   HostGroupTransport object.

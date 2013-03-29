@@ -16,7 +16,7 @@ module DeepSecurity
       :fatal => Logger::FATAL
   }
 
-  # This class  represents the DeepSecurity Manager. It's the entry point for all further actions
+  # This class represents the DeepSecurity Manager. It's the entry point for all further actions
   class Manager <DSObject
 
     @@current = nil
