@@ -1,40 +1,111 @@
+# @author Udo Schneider <Udo.Schneider@homeaddress.de>
 require "progressbar"
 require "csv"
 
 module Dsc
 
+  # This class defines an superclass for all `dsc` commands. It defines several helper methods which either define
+  # flags, options and commands or helpers to define them.
+  # @abstract
   class Command
 
+    # @abstract DeepSecurity object covered by this class.
+    # @return [DeepSecurity::TransportObject]
     def self.transport_class
       nil
     end
 
+    # @group Helper methods
+
+    # Transport class name without namespace
+    # @return [String] Transport class name without namespace
     def self.transport_class_name
       class_name = transport_class.name.split('::').last || ''
     end
 
+    #  Human readable transport class name without namespace
+    # @return [String] Human readable transport class name without namespace
     def self.transport_class_string
       transport_class_name.split(/(?=[A-Z])/).join(" ")
     end
 
+    # Class name without namespace as command symbol
+    # @return [Symbol] Class name without namespace as command symbol
     def self.command_symbol
       transport_class_name.split(/(?=[A-Z])/).join("_").downcase.to_sym
     end
 
+    # The schema of the transport class
+    # @return [Hash<Symbol => SavonHelper::TypeMapping]
     def self.schema
       transport_class.mappings
     end
 
+    # @endgroup
+
+    # @param [Hash] global_options Global options passed to the `dsc` command.
+    # @option global_options [String] :manager The hostname of the DeepSecurity Manager.
+    # @option global_options [String] :port The TCP port to use.
+    # @option global_options [String, nil] :tenant The tenant name or nil.
+    # @option global_options [String] :username The username.
+    # @option global_options [String] :password The password.
+    # @option global_options [Boolean] :P Show progessbar?
+    # @option global_options [String, nil] :debug The debug level.
+    # @option global_options [String] :outfile The outfile.
     def initialize(global_options)
-      @hostname = global_options[:m]
+      @hostname = global_options[:manager]
       @port = global_options[:port].to_i
-      @tenant = global_options[:t]
-      @username =global_options[:u]
-      @password = global_options[:p]
+      @tenant = global_options[:tenant]
+      @username = global_options[:username]
+      @password = global_options[:password]
       @show_progress_bar = global_options[:P]
-      @debug_level = parse_debug_level(global_options[:d])
-      @output = global_options[:o]
+      @debug_level = parse_debug_level(global_options[:debug])
+      @output = global_options[:outfile]
     end
+
+    # @group Helper methods
+
+    # Provide an open output  while executing the block.
+    # @yieldparam output [IO] Opened IO
+    # @yield [output] Gives the output to the block
+    # @return [void]
+    def output
+      unless @output == '--'
+        output = File.open(option, 'w')
+      else
+        output = STDOUT
+      end
+      yield output
+      output.close() unless @output == '--'
+    end
+
+    # Provides a connection to the DeepSecurity Manager  while executing the block.
+    # @yieldparam manager [DeepSecurity::Manager] DeepSecurity Manager
+    # @yield [manager] Gives the manager to the block
+    # @return [void]
+    def connect
+      manager = DeepSecurity::Manager.server(@hostname, @port, @debug_level)
+      yield manager
+    end
+
+    # Provides an authenticated connection to the DeepSecurity Manager  while executing the block.
+    # @yieldparam manager [DeepSecurity::Manager] DeepSecurity Manager
+    # @yield [manager] Gives the manager to the block
+    # @return [void]
+    def authenticate
+      connect do |dsm|
+        begin
+          dsm.connect(@tenant, @username, @password)
+          yield dsm
+        rescue DeepSecurity::AuthenticationFailedException => e
+          puts "Authentication failed! #{e.message}"
+        ensure
+          dsm.disconnect()
+        end
+      end
+    end
+
+    # @endgroup
 
     # @group Debug Level flag
 
@@ -191,17 +262,49 @@ module Dsc
 
     # @group Command definitions
 
+    # Define all commands for this available for this (sub) command
+    # @param command [GLI::Command] Parent command
+    # @return [void]
+    def self.define_commands(command)
+      self.define_api_version_command(command)
+      self.define_manager_time_command(command)
+    end
+
+    # Define `api_version` command
+    # @param command [GLI::Command] Parent command
+    # @return [void]
+    def self.define_api_version_command(command)
+      command.desc 'Display API Version'
+      command.command :api_version do |api_version_command|
+        api_version_command.action do |global_options, options, args|
+          self.new(global_options).api_version_command(options, args)
+        end
+      end
+    end
+
+    # Define `manager_time` command
+    # @param command [GLI::Command] Parent command
+    # @return [void]
+    def self.define_manager_time_command(command)
+      command.desc 'Display Manager time'
+      command.command :manager_time do |manager_time_command|
+        manager_time_command.action do |global_options, options, args|
+          self.new(global_options).manager_time_command(options, args)
+        end
+      end
+    end
+
     # Define `list` command
     # @param command [GLI::Command] Parent command
-    # @yieldparam list [GLI::Command] The just defined list command
-    # @yield [list] Gives the list command to the block
+    # @yieldparam list_command [GLI::Command] The just defined list command
+    # @yield [list_command] Gives the list command to the block
     # @return [void]
     def self.define_list_command(command)
       command.desc "List #{self.transport_class_string}s"
-      command.command :list do |list|
-        define_fields_flag(list)
-        yield list if block_given?
-        list.action do |global_options, options, args|
+      command.command :list do |list_command|
+        define_fields_flag(list_command)
+        yield list_command if block_given?
+        list_command.action do |global_options, options, args|
           self.new(global_options).list(options, args)
         end
       end
@@ -209,66 +312,58 @@ module Dsc
 
     # Define `schema` command
     # @param command [GLI::Command] Parent command
-    # @yieldparam list [GLI::Command] The just defined schema command
-    # @yield [list] Gives the schema command to the block
+    # @yieldparam schema_command [GLI::Command] The just defined schema command
+    # @yield [schema_command] Gives the schema command to the block
     # @return [void]
     def self.define_schema_command(command)
       command.desc "Show #{self.transport_class_string} schema"
-      command.command :schema do |schema|
-        yield schema if block_given?
-        schema.action do |global_options, options, args|
-          self.new(global_options).print_schema(options, args)
+      command.command :schema do |schema_command|
+        yield schema_command if block_given?
+        schema_command.action do |global_options, options, args|
+          self.new(global_options).schema_command(options, args)
         end
       end
     end
 
     # @endgroup
 
-    def output
-      unless @output == '--'
-        output = File.open(option, 'w')
-      else
-        output = STDOUT
-      end
-      yield output
-      output.close() unless @output == '--'
-    end
+    # @group Command Implementations
 
-    def connect
-      yield DeepSecurity::Manager.server(@hostname, @port, @debug_level)
-    end
-
-    def authenticate
-      connect do |dsm|
-        begin
-          dsm.connect(@tenant, @username, @password)
-          yield dsm
-        rescue DeepSecurity::AuthenticationFailedException => e
-          puts "Authentication failed! #{e.message}"
-        ensure
-          dsm.disconnect()
-        end
-      end
-    end
-
-
-    def print_api_version(options, args)
+    # `api_version` Implementation.
+    # Display the API version in use by the DeepSecurity Manager.
+    # @note Does not require authentication
+    # @param options [Hash<Symbol => Object>] Merged global/local options from GLI
+    # @param args [Array<String>] Arguments from GLI
+    # @return [void]
+    def api_version_command(options, args)
       output do |output|
-        authenticate do |dsm|
+        connect do |dsm|
           output.puts dsm.api_version()
         end
       end
     end
 
-    def print_manager_time(options, args)
+    # `manager_time` Implementation.
+    # Display the local time of the DeepSecurity Manager.
+    # @note Does not require authentication
+    # @param options [Hash<Symbol => Object>] Merged global/local options from GLI
+    # @param args [Array<String>] Arguments from GLI
+    # @return [void]
+    def manager_time_command(options, args)
       output do |output|
-        authenticate do |dsm|
+        connect do |dsm|
           output.puts dsm.manager_time()
         end
       end
     end
 
-    def print_schema(options, args)
+    # `schema` Implementation.
+    # Display schema of the current datatype (defined by `transport_class`).
+    # @note Does not require authentication
+    # @param options [Hash<Symbol => Object>] Merged global/local options from GLI
+    # @param args [Array<String>] Arguments from GLI
+    # @return [void]
+    def schema_command(options, args)
       output do |output|
         schema = self.class.schema()
         schema.keys.sort.each do |key|
@@ -276,6 +371,8 @@ module Dsc
         end
       end
     end
+
+    # @endgroup
 
   end
 
