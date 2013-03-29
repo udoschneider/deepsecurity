@@ -131,7 +131,7 @@ module SavonHelper
 
     # Convert from Ruby Boolean type to Savon data
     # @param value [Boolean] Source Ruby data
-    # @return [Hash]
+    # @return [String]
     def to_savon_data(value)
       value.to_s
     end
@@ -146,16 +146,29 @@ module SavonHelper
 
   end
 
+  # DatetimeMapping maps Savon data to Ruby DateTimes.
   class DatetimeMapping < TypeMapping
 
+    # @!group Converting
+
+    # Convert from Savon data to Ruby datetime
+    # @param data [Hash, String] Source Savon data
+    # @return [DateTime]
     def from_savon_data(data)
       DateTime.parse(data.to_s)
     end
 
+    # Convert from Ruby DateTime type to Savon data
+    # @param value [DateTime] Source Ruby data
+    # @return [String]
     def to_savon_data(value)
       value.to_datetime.to_s
     end
 
+    # @!endgroup
+
+    # Return the class description represented by the mapping.
+    # @return [String]
     def type_string
       "datetime"
     end
