@@ -120,6 +120,10 @@ module Dsc
 
     # @endgroup
 
+    # @group Time filter flag
+
+    # Valid timefilter mapping (symbol to instance)
+    # @return [Hash<Symbol => DeepSecurity::TimeFilter>] Valid timefilter mapping
     def self.valid_time_filters
       {
           :last_hour => DeepSecurity::TimeFilter.last_hour,
@@ -129,15 +133,29 @@ module Dsc
       }
     end
 
+    # Valid time filter string for help string
+    # @return[String] Valid time filters
     def self.valid_time_filters_string
       valid_time_filters.keys.join(', ')
     end
 
-    def parse_time_filter(string)
-      filter = self.class.valid_time_filters[string.to_sym]
+    # Parse time_filter argument
+    # @return [DeepSecurity::TimeFilter] Time filter
+    def parse_time_filter(argument)
+      filter = self.class.valid_time_filters[argument.to_sym]
       raise "Unknown time filter" if filter.nil?
       filter
     end
+
+    # Define time_filter flag
+    # @return [void]
+    def self.define_time_filter_flag(command)
+      command.flag [:time_filter],
+                   :desc => "A filter specifying the time interval to query (One of #{self.valid_time_filters_string})",
+                   :default_value => "last_day"
+    end
+
+    # @endgroup
 
     def self.valid_detail_levels
       DeepSecurity::EnumHostDetailLevel.keys()
@@ -225,12 +243,6 @@ module Dsc
           self.new(global_options).print_schema(options, args)
         end
       end
-    end
-
-    def self.define_time_filter_argument(command)
-      command.desc "A filter specifying the time interval to query (One of #{self.valid_time_filters_string})"
-      command.default_value "last_day"
-      command.flag [:time_filter]
     end
 
     def self.define_detail_level_argument(command)
