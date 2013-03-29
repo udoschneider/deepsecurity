@@ -86,6 +86,20 @@ module Dsc
       filter
     end
 
+    def self.valid_detail_levels
+      DeepSecurity::EnumHostDetailLevel.keys()
+    end
+
+    def self.valid_detail_levels_string
+      valid_detail_levels.join(", ")
+    end
+
+    def parse_detail_level(string)
+      detail_level = DeepSecurity::EnumHostDetailLevel[string.upcase.strip]
+      raise "Unknown detail level filter" detail_level.nil?
+      detail_level
+    end
+
 
     def debug_level_from_option(option)
       return nil if option.blank?
@@ -177,6 +191,12 @@ module Dsc
       command.desc "A comma separated list of fields to display. (Available fields: #{self.valid_fields_string})"
       command.default_value self.default_fields_string
       command.flag [:fields]
+    end
+
+    def self.define_detail_level_argument(command)
+      command.desc "A detail level specifiying the extent of data returned. (Available values: #{self.valid_detail_levels_string})"
+      command.default_value "low"
+      command.flag [:detail_level]
     end
 
   end
