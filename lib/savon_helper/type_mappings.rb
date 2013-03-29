@@ -59,11 +59,10 @@ module SavonHelper
   # ArrayMapping maps Savon data to Ruby Arrays
   class ArrayMapping < TypeMapping
 
-
-    # Convert the given Savon data to an Array consisting of elements of class klass
-    # @param element_mapping [TypeMapping]  TypeMapping for elements
-    # @param data [Hash,Array]  Savon Data
-    # @return [Array<Object>]
+    # Convert the given Savon data to an Array consisting of elements described by element_mapping
+    # @param element_mapping [TypeMapping] TypeMapping for elements
+    # @param data [Hash,Array] Source Savon Data
+    # @return [Array<element_mapping>]
     def self.from_savon_data(element_mapping, data)
       return [] if data.blank?
       result = []
@@ -96,8 +95,8 @@ module SavonHelper
     # @!group Converting
 
     # Convert from Savon data to Ruby value
-    # @param data [Hash]  Savon data
-    # @return [Array]
+    # @param data [Hash, Hash] Source Savon data
+    # @return [Array<@element_mapping>]
     def from_savon_data(data)
       self.class.from_savon_data(@element_mapping, data)
     end
