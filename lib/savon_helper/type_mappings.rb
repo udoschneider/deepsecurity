@@ -402,17 +402,28 @@ module SavonHelper
 
   end
 
+  # HintMapping maps Savon data to Ruby objects of type klass (r/o).
   class HintMapping < TypeMapping
 
+    # A new instance of ObjectMapping with description for class klass.
+    # @param klass [Class] A class returned by the hint accessor
+    # @param description [String]
+    # @return [HintMapping]
     def initialize(klass, description='')
       super(description)
       @klass = klass
     end
 
+    # @!endgroup
+
+    # @abstract Return the class represented by the mapping.
+    # @return [Class]
     def object_klass
       @klass
     end
 
+    # Return the class description represented by the mapping.
+    # @return [String]
     def type_string
       "#{@klass}"
     end
