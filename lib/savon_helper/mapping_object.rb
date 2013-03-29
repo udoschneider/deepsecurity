@@ -2,26 +2,42 @@
 
 module SavonHelper
 
+  # @abstract MappingObject is an abstract class providing methods to automatically convert from and to savon data with
+  # the help of TypeMappers defined by it's DSL.
   class MappingObject
+
     @@mappings = Hash.new()
 
     # @!group Request Helper
 
-    # Send a Request to the SOAP API for method +method_name+ with the data in +soap_body+ and unwrap the response
-    def send_soap(method, message = {})
+    # Send a Request to the SOAP API for method with arguments and unwrap the response
+    # @todo Refactor client, send/recieve stuff into SavonHelper.
+    # @param method [Symbol] The SOAP method to call.
+    # @param arguments [Hash] The method arguments
+    # @return [Hash] The result hash.
+    def send_soap(method, arguments = {})
       retryable(:tries => 5, :on => Errno::ECONNRESET) do
-        logger.debug { "#{self.class}\##{__method__}(#{method.inspect}, #{message.inspect})" }
-        response = @client.call method, :message => message
+        logger.debug { "#{self.class}\##{__method__}(#{method.inspect}, #{arguments.inspect})" }
+        response = @client.call method, :message => arguments
         return response.to_hash[(method.to_s+"_response").to_sym][(method.to_s+"_return").to_sym]
       end
     end
 
     # Helper Method deserializing the SOAP response into an object
+    # @param method_name [Symbol] The SOAP method to call.
+    # @param object_class [MappingObject] The class to typecast the result to.
+    # @param arguments [Hash] The method arguments
+    # @return [object_class] The object filled from the response.
     def request_object(method_name, object_class, arguments={})
       object_class.from_savon_data(send_soap(method_name, arguments))
     end
 
-    # Helper Method deserializing the SOAP response into an object
+    # Helper Method deserializing the SOAP response into an array of objects.
+    # @param method_name [Symbol] The SOAP method to call.
+    # @param object_class [MappingObject] The element class to typecast the result elements to.
+    # @param collection_name [Symbol] The name of the reply parameter.
+    # @param arguments [Hash] The method arguments
+    # @return [Array<object_class>] The object filled from the response.
     def request_array(method_name, object_class, collection_name = nil, arguments={})
       data = send_soap(method_name, arguments)
       data = data[collection_name] unless collection_name.blank?
@@ -47,11 +63,11 @@ module SavonHelper
 
     # Return the instance as a hash of simple (type-converted) values suitable for Savon.
     #
-    # @return [Hash] A Hash of simple types.
+    # @return [Hash] A hash of simple types.
     def to_savon_data
       hash = Hash.new()
       mappings.keys.each do |ivar_name|
-        value = ivar_to_savon_data(ivar_name, instance_variable_get("@#{ivar_name}"))
+        value = value_to_savon_data(ivar_name, instance_variable_get("@#{ivar_name}"))
         hash[ivar_name.to_sym] = value unless value.nil?
       end
       hash
@@ -62,7 +78,7 @@ module SavonHelper
     # @return [self]
     def fill_from_savon_data(data)
       data.each do |key, value|
-        instance_variable_set("@#{key}", ivar_from_savon_data(key, value))
+        instance_variable_set("@#{key}", savon_data_to_value(key, value))
       end
     end
 
@@ -72,7 +88,7 @@ module SavonHelper
       self.class.mappings
     end
 
-    # Return TypeMappingschroch specific to the class
+    # Return TypeMappings specific to the class
     # @return [Hash{Symbol => TypeMapping}]
     def self.mappings
       mappings = @@mappings[self]
@@ -81,6 +97,9 @@ module SavonHelper
       @@mappings[self]
     end
 
+    # Test if the given class understands the field definition
+    # @param field [String] A dot separeted list of accessors
+    # @return [Boolean]
     def self.has_attribute_chain(field)
       return true if self.method_defined?(field)
       current_class = self
@@ -105,10 +124,13 @@ module SavonHelper
       end
     end
 
+    # Accessors defined by TypeMappings
+    # @return [Array<Symbol>]
     def self.defined_attributes()
       self.mappings.keys
     end
 
+    # Convert the instance to a JSON representation
     def to_json(*a)
       result = {}
       self.mappings.keys.each { |key| result[key] = self.send(key).to_json }
@@ -118,19 +140,26 @@ module SavonHelper
       }.to_json(*a)
     end
 
-    # @raise [MissingTypeMappingException] if no mapping for ivar_name can be found
-    def ivar_from_savon_data(ivar_name, value)
-      mapping = mappings[ivar_name]
-      mapping = SavonHelper.define_missing_type_mapping(self.class, ivar_name, value, mappings) if mapping.nil?
-      return nil if value.nil?
-      mapping.from_savon_data(value)
+    # Convert Savon data to ruby value.
+    # @param mapping_name [Symbol] The name of the instance variable
+    # @param data [Hash, Object]
+    # @return [Object]
+    def savon_data_to_value(mapping_name, data)
+      mapping = mappings[mapping_name]
+      mapping = SavonHelper.define_missing_type_mapping(self.class, mapping_name, data, mappings) if mapping.nil?
+      return nil if data.nil?
+      mapping.from_savon_data(data)
     end
 
-    def ivar_to_savon_data(ivar_name, value)
-      mapping = mappings[ivar_name]
-      mapping = SavonHelper.define_missing_type_mapping(self.class, ivar_name, value, mappings) if mapping.nil?
+    # Convert Ruby value to Savon data.
+    # @param mapping_name [Symbol] The name of the instance variable
+    # @param value [Object]
+    # @return [Hash, Object]
+    def value_to_savon_data(mapping_name, value)
+      mapping = mappings[mapping_name]
+      mapping = SavonHelper.define_missing_type_mapping(self.class, mapping_name, value, mappings) if mapping.nil?
       return nil if value.nil?
-      return mapping.to_savon_data(value)
+      mapping.to_savon_data(value)
     end
 
     # @!group DSL to define attributes mapping
@@ -414,6 +443,8 @@ module SavonHelper
 end
 
 class Object
+
+  # Convert to Savon data.
   def to_savon_data
     self
   end
