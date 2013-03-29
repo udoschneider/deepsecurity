@@ -2,11 +2,11 @@
 
 module SavonHelper
 
-  # A TypeMappng class is responsible for converting between Savon primitive types and compound Ruby Types
+  # A TypeMapping class is responsible for converting between Savon primitive types and Ruby Types
   class TypeMapping
 
     # A new instance of TypeMapping with description
-    # @param description [String]
+    # @param description [String] A String describing the mapping.
     # @return [TypeMapping]
     def initialize(description='')
       @description = description
@@ -14,15 +14,15 @@ module SavonHelper
 
     # @!group Converting
 
-    # Convert from Savon data to Ruby value
-    # @param data [Hash]  Savon data
+    # @abstract Convert from Savon data to Ruby value
+    # @param data [Hash, Object] Source Savon data
     # @return [Object]
     def from_savon_data(data)
       logger.error { "#{self.class}##{__method__}(#{data.inspect}) not implemented!" }
     end
 
-    # Convert from Ruby value type to Savon data
-    # @param value [Object]  Ruby value
+    # @abstract Convert from Ruby value type to Savon data
+    # @param value [Object] Source Ruby value
     # @return [Object]
     def to_savon_data(value)
       logger.error { "#{self.class}##{__method__}(#{value.inspect}) not implemented!" }
@@ -36,13 +36,13 @@ module SavonHelper
       @description
     end
 
-    # Return the class represented by the mapping.
+    # @abstract Return the class represented by the mapping.
     # @return [Class]
     def object_klass
       logger.error { "#{self.class}##{__method__}() not implemented!" }
     end
 
-    # Return the class description represented by the mapping.
+    # @abstract Return the class description represented by the mapping.
     # @return [String]
     def type_string
       logger.error { "#{self.class}##{__method__}() not implemented!" }
