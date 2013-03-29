@@ -26,5 +26,9 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'redcarpet'
   gem.add_development_dependency 'github-markup'
 
+  gem.add_development_dependency 'facets' # , '2.8.4'
+  gem.add_development_dependency 'ruby-termios' # you're gonna need this gem too, for some reason
+  gem.add_development_dependency 'unroller'
+
 end
 

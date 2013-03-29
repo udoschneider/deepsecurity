@@ -32,17 +32,41 @@ module Dsc
       @username =global_options[:u]
       @password = global_options[:p]
       @show_progress_bar = global_options[:P]
-      @debug_level = debug_level_from_option(global_options[:d])
+      @debug_level = parse_debug_level(global_options[:d])
       @output = global_options[:o]
     end
 
+    # @group Debug Level argument
+
+    # Valid log levels
+    # @return [Array<String>] Valid log levels
     def self.valid_debug_levels
       DeepSecurity::LOG_MAPPING.keys
     end
 
+    # String of debug levels for help string
+    # @return [String] String of debug levels for help string
     def self.valid_debug_levels_string
       valid_debug_levels.join(", ")
     end
+
+    # Parse debug level
+    # @return [nil, DeepSecurity::LOG_MAPPING] Return parsed debug level
+    def parse_debug_level(argument)
+      return nil if argument.blank?
+      return argument.to_sym if (DeepSecurity::LOG_MAPPING.keys.include?(argument.to_sym))
+      :debug
+    end
+
+    # Define debug level argument
+    # @return [void]
+    def self.define_debug_argument(c = GLI::DSL)
+      desc "Enable client debug output. (One of #{valid_debug_levels_string})"
+      arg_name 'debug'
+      flag [:d, :debug]
+    end
+
+    # @endgroup
 
     def self.default_fields
       []
@@ -104,13 +128,6 @@ module Dsc
       detail_level = DeepSecurity::EnumHostDetailLevel[string.upcase.strip]
       raise "Unknown detail level filter" if detail_level.nil?
       detail_level
-    end
-
-
-    def debug_level_from_option(option)
-      return nil if option.blank?
-      return option.to_sym if (DeepSecurity::LOG_MAPPING.keys.include?(option.to_sym))
-      :debug
     end
 
     def output
