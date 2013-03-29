@@ -373,18 +373,31 @@ module SavonHelper
 
   end
 
+  # MissingMapping maps Savon data to itself (no conversion).
   class MissingMapping < TypeMapping
 
+    # @!group Converting
+
+    # Convert from Savon data to itself.
+    # @param data [Object] Source Savon data
+    # @return [Object]
     def from_savon_data(data)
       data
     end
 
+    # Convert from itself (no conversion) to Savon data.
+    # @param value [Object] Source Ruby data
+    # @return [Object]
     def to_savon_data(value)
       value
     end
 
+    # @!endgroup
+
+    # Return the class description represented by the mapping.
+    # @return [String]
     def type_string
-      "MISSING"
+      "UNDEFINED"
     end
 
   end
