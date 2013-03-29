@@ -123,14 +123,14 @@ module SavonHelper
     # @!group Converting
 
     # Convert from Savon data to Ruby Boolean
-    # @param data [Hash]  Savon data
+    # @param data [Hash, Boolean, String] Source Savon data
     # @return [Boolean]
     def from_savon_data(data)
       data.to_s == "true"
     end
 
     # Convert from Ruby Boolean type to Savon data
-    # @param value [Object]  Boolean
+    # @param value [Boolean] Source Ruby data
     # @return [Hash]
     def to_savon_data(value)
       value.to_s
