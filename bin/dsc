@@ -31,13 +31,8 @@ Dsc::Command.define_global_flags(self)
 Dsc::Command.define_misc_commands(self)
 
 Dsc::HostDetailCommand.define_commands(self)
+Dsc::AntiMalwareEventCommand.define_commands(self)
 
-command_class = Dsc::AntiMalwareEventCommand
-desc "Access #{command_class.transport_class_string}s"
-command command_class.command_symbol do |c|
-  command_class.define_list_command(c)
-  command_class.define_schema_command(c)
-end
 
 pre do |global, command, options, args|
   # Pre logic here
