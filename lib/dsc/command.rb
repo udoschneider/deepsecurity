@@ -58,14 +58,6 @@ module Dsc
       :debug
     end
 
-    # Define debug level argument
-    # @return [void]
-    def self.define_debug_argument(c = GLI::DSL)
-      desc "Enable client debug output. (One of #{valid_debug_levels_string})"
-      arg_name 'debug'
-      flag [:d, :debug]
-    end
-
     # @endgroup
 
     def self.default_fields

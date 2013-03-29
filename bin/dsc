@@ -27,16 +27,12 @@ program_desc 'DeepSecurity command line client'
 
 version Dsc::VERSION
 
-require 'unroller'
-Unroller::trace do
+flag [:d, :debug], :desc => "Enable client debug output. (One of #{Dsc::Command.valid_debug_levels_string})", :arg_name => 'debug_level'
 
-  Dsc::Command.define_debug_argument
 
-  desc 'Deep Security Manager Host'
-  arg_name 'hostname'
-  flag [:m, :manager]
-
-end
+desc 'Deep Security Manager Host'
+arg_name 'hostname'
+flag [:m, :manager]
 
 desc 'Webservice Port'
 arg_name 'port'
