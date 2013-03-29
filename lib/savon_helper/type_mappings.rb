@@ -275,43 +275,6 @@ module SavonHelper
 
   end
 
-  # ObjectMapping maps Savon data to Ruby Objects.
-  class ObjectMapping < TypeMapping
-
-    # A new instance of ObjectMapping with description for class klass.
-    # @param klass [Class, #from_savon_data] A class which can create instances from Savon data and provide Savon data for export.
-    # @param description [String]
-    # @return [ObjectMapping]
-    def initialize(klass, description='')
-      super(description)
-      @klass = klass
-    end
-
-    # @!group Converting
-
-    # Convert from Savon data to Ruby Object.
-    # @param data [Hash, String] Source Savon data
-    # @return [SavonHelper::MappingObject, #from_savon_data]
-    def from_savon_data(data)
-      @klass.from_savon_data(data)
-    end
-
-    # @!endgroup
-
-    # @abstract Return the class represented by the mapping.
-    # @return [Class]
-    def object_klass
-      @klass
-    end
-
-    # Return the class description represented by the mapping.
-    # @return [String]
-    def type_string
-      "#{@klass}"
-    end
-
-  end
-
   # HintMapping maps Savon data to Ruby objects of type klass (r/o).
   class HintMapping < TypeMapping
 
@@ -337,6 +300,30 @@ module SavonHelper
     def type_string
       "#{@klass}"
     end
+
+  end
+
+  # ObjectMapping maps Savon data to Ruby Objects.
+  class ObjectMapping < HintMapping
+
+    # A new instance of ObjectMapping with description for class klass.
+    # @param klass [Class, #from_savon_data] A class which can create instances from Savon data and provide Savon data for export.
+    # @param description [String]
+    # @return [ObjectMapping]
+    def initialize(klass, description='')
+      super(klass, description)
+    end
+
+    # @!group Converting
+
+    # Convert from Savon data to Ruby Object.
+    # @param data [Hash, String] Source Savon data
+    # @return [SavonHelper::MappingObject, #from_savon_data]
+    def from_savon_data(data)
+      @klass.from_savon_data(data)
+    end
+
+    # @!endgroup
 
   end
 
@@ -429,7 +416,6 @@ module SavonHelper
     end
 
   end
-
 
   # Define a MissingMapping for the given options
   # @todo Check if mappings can be derived from klass
