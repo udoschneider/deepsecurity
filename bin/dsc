@@ -27,7 +27,8 @@ program_desc 'DeepSecurity command line client'
 
 version Dsc::VERSION
 
-flag [:d, :debug], :desc => "Enable client debug output. (One of #{Dsc::Command.valid_debug_levels_string})", :arg_name => 'debug_level'
+command_class = Dsc::Command
+command_class.define_debug_flag(self)
 
 
 desc 'Deep Security Manager Host'

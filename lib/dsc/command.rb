@@ -36,10 +36,10 @@ module Dsc
       @output = global_options[:o]
     end
 
-    # @group Debug Level argument
+    # @group Debug Level flag
 
-    # Valid log levels
-    # @return [Array<String>] Valid log levels
+    # Valid debug levels
+    # @return [Array<String>] Valid debug levels
     def self.valid_debug_levels
       DeepSecurity::LOG_MAPPING.keys
     end
@@ -56,6 +56,12 @@ module Dsc
       return nil if argument.blank?
       return argument.to_sym if (DeepSecurity::LOG_MAPPING.keys.include?(argument.to_sym))
       :debug
+    end
+
+    # Define debug level argument
+    # @return [void]
+    def self.define_debug_flag(c)
+      c.flag [:d, :debug], :desc => "Enable client debug output. (One of #{Dsc::Command.valid_debug_levels_string})", :arg_name => 'debug_level'
     end
 
     # @endgroup
