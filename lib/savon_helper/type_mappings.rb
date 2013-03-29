@@ -242,16 +242,27 @@ module SavonHelper
 
   end
 
+  # IntegerMapping maps Savon data to Ruby integers.
   class IntegerMapping < TypeMapping
 
+    # @!group Converting
+
+    # Convert from Savon data to Ruby integers
+    # @param data [Hash, String] Source Savon data
+    # @return [Integer]
     def from_savon_data(data)
       Integer(data.to_s)
     end
 
+    # Convert from Ruby float type to Savon data
+    # @param value [Integer] Source Ruby data
+    # @return [String]
     def to_savon_data(value)
       value.to_s
     end
 
+    # Return the class description represented by the mapping.
+    # @return [String]
     def type_string
       "int"
     end
