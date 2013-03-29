@@ -28,41 +28,8 @@ program_desc 'DeepSecurity command line client'
 version Dsc::VERSION
 
 command_class = Dsc::Command
-command_class.define_debug_flag(self)
-
-
-desc 'Deep Security Manager Host'
-arg_name 'hostname'
-flag [:m, :manager]
-
-desc 'Webservice Port'
-arg_name 'port'
-default_value '4119'
-flag [:port]
-
-desc 'Tenat Name'
-arg_name 'tenat'
-default_value ''
-flag [:t, :tenant]
-
-desc 'Username'
-arg_name 'username'
-default_value 'MasterAdmin'
-flag [:u, :username]
-
-desc 'Password'
-arg_name 'password'
-flag [:p, :password]
-
-desc 'Output filename'
-default_value '--'
-flag [:o, :outfile]
-
-desc 'Show progressbar'
-default_value false
-switch [:P]
-
-command_class.define_commands(self)
+command_class.define_global_flags(self)
+command_class.define_misc_commands(self)
 
 command_class = Dsc::HostDetailCommand
 desc "Access #{command_class.transport_class_string}s"

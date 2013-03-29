@@ -29,8 +29,8 @@ module Dsc
       transport_class_name.split(/(?=[A-Z])/).join(" ")
     end
 
-    # Class name without namespace as command symbol
-    # @return [Symbol] Class name without namespace as command symbol
+    # Class name without namespace as command_context symbol
+    # @return [Symbol] Class name without namespace as command_context symbol
     def self.command_symbol
       transport_class_name.split(/(?=[A-Z])/).join("_").downcase.to_sym
     end
@@ -43,7 +43,7 @@ module Dsc
 
     # @endgroup
 
-    # @param [Hash] global_options Global options passed to the `dsc` command.
+    # @param [Hash] global_options Global options passed to the `dsc` command_context.
     # @option global_options [String] :manager The hostname of the DeepSecurity Manager.
     # @option global_options [String] :port The TCP port to use.
     # @option global_options [String, nil] :tenant The tenant name or nil.
@@ -107,6 +107,98 @@ module Dsc
 
     # @endgroup
 
+    # @group Misc global flags/options definitions
+
+    # Define flags
+    # @return [void]
+    def self.define_global_flags(command_context)
+      define_debug_flag(command_context)
+      define_manager_flag(command_context)
+      define_port_flag(command_context)
+      define_tenant_flag(command_context)
+      define_username_flag(command_context)
+      define_password_flag(command_context)
+      define_outfile_flag(command_context)
+      define_progress_bar_option(command_context)
+    end
+
+    # Define manager hostname flag
+    # @param command_context [CLI::App] The current context of the command.
+    # @return [void]
+    def self.define_manager_flag(command_context)
+      command_context.flag [:m, :manager],
+                           :desc => 'Deep Security Manager Host',
+                           :arg_name => 'hostname'
+    end
+
+    # Define manager TCP Port flag
+    # @param command_context [CLI::App] The current context of the command.
+    # @return [void]
+    def self.define_port_flag(command_context)
+      command_context.flag [:port],
+                           :desc => 'Webservice Port',
+                           :arg_name => 'port',
+                           :default_value => '4119'
+    end
+
+    # Define tenant flag
+    # @param command_context [CLI::App] The current context of the command.
+    # @return [void]
+    def self.define_tenant_flag(command_context)
+      command_context.flag [:t, :tenant],
+                           :desc => 'Tenat Name',
+                           :arg_name => 'tenat',
+                           :default_value => ''
+    end
+
+    # Define username flag
+    # @param command_context [CLI::App] The current context of the command.
+    # @return [void]
+    def self.define_username_flag(command_context)
+      command_context.flag [:u, :username],
+                           :desc => 'Username',
+                           :arg_name => 'username',
+                           :default_value => 'MasterAdmin'
+    end
+
+    # Define password flag
+    # @param command_context [CLI::App] The current context of the command.
+    # @return [void]
+    def self.define_password_flag(command_context)
+      command_context.flag [:p, :password],
+                           :desc => 'Password',
+                           :arg_name => 'password'
+    end
+
+    # Define outfile flag
+    # @param command_context [CLI::App] The current context of the command.
+    # @return [void]
+    def self.define_outfile_flag(command_context)
+      command_context.flag [:o, :outfile],
+                           :desc => 'Output filename',
+                           :default_value => '--'
+    end
+
+    # Define outfile flag
+    # @param command_context [CLI::App] The current context of the command.
+    # @return [void]
+    def self.define_outfile_flag(command_context)
+      command_context.flag [:o, :outfile],
+                           :desc => 'Output filename',
+                           :default_value => '--'
+    end
+
+    # Define progress_bar option
+    # @param command_context [CLI::App] The current context of the command.
+    # @return [void]
+    def self.define_progress_bar_option(command_context)
+      command_context.switch [:P, :'progress_bar'],
+                             :desc => 'Show progressbar',
+                             :default_value => false
+    end
+
+    # @endgroup
+
     # @group Debug Level flag
 
     # Valid debug levels
@@ -131,10 +223,10 @@ module Dsc
 
     # Define debug level flag
     # @return [void]
-    def self.define_debug_flag(command)
-      command.flag [:d, :debug],
-                   :desc => "Enable client debug output. (One of #{Dsc::Command.valid_debug_levels_string})",
-                   :arg_name => 'debug_level'
+    def self.define_debug_flag(command_context)
+      command_context.flag [:d, :debug],
+                           :desc => "Enable client debug output. (One of #{Dsc::Command.valid_debug_levels_string})",
+                           :arg_name => 'debug_level'
     end
 
     # @endgroup
@@ -183,10 +275,10 @@ module Dsc
 
     # Define fields flag
     # @return [void]
-    def self.define_fields_flag(command)
-      command.flag [:fields],
-                   :desc => "A comma separated list of fields to display or a file containing those fields. (Available fields: #{self.valid_fields_string})",
-                   :default_value => self.default_fields_string
+    def self.define_fields_flag(command_context)
+      command_context.flag [:fields],
+                           :desc => "A comma separated list of fields to display or a file containing those fields. (Available fields: #{self.valid_fields_string})",
+                           :default_value => self.default_fields_string
     end
 
     # @endgroup
@@ -220,10 +312,10 @@ module Dsc
 
     # Define time_filter flag
     # @return [void]
-    def self.define_time_filter_flag(command)
-      command.flag [:time_filter],
-                   :desc => "A filter specifying the time interval to query (One of #{self.valid_time_filters_string})",
-                   :default_value => "last_day"
+    def self.define_time_filter_flag(command_context)
+      command_context.flag [:time_filter],
+                           :desc => "A filter specifying the time interval to query (One of #{self.valid_time_filters_string})",
+                           :default_value => "last_day"
     end
 
     # @endgroup
@@ -252,56 +344,62 @@ module Dsc
 
     # Define detail_level flag
     # @return [void]
-    def self.define_detail_level_flag(command)
-      command.flag [:detail_level],
-                   :desc => "A detail level specifiying the extent of data returned. (Available values: #{self.valid_detail_levels_string})",
-                   :default_value => "low"
+    def self.define_detail_level_flag(command_context)
+      command_context.flag [:detail_level],
+                           :desc => "A detail level specifiying the extent of data returned. (Available values: #{self.valid_detail_levels_string})",
+                           :default_value => "low"
     end
 
     # @endgroup
 
     # @group Command definitions
 
-    # Define all commands for this available for this (sub) command
-    # @param command [GLI::Command] Parent command
+    # @abstract Define all commands for this available for this (sub) command_context
+    # @param command_context [CLI::App] The current context of the command.
     # @return [void]
-    def self.define_commands(command)
-      self.define_api_version_command(command)
-      self.define_manager_time_command(command)
+    def self.define_commands(command_context)
     end
 
-    # Define `api_version` command
-    # @param command [GLI::Command] Parent command
+    # Define some simple commands.
+    # @param command_context [CLI::App] The current context of the command.
     # @return [void]
-    def self.define_api_version_command(command)
-      command.desc 'Display API Version'
-      command.command :api_version do |api_version_command|
+    def self.define_misc_commands(command_context)
+      self.define_api_version_command(command_context)
+      self.define_manager_time_command(command_context)
+    end
+
+    # Define `api_version` command_context
+    # @param command_context [CLI::App] The current context of the command.
+    # @return [void]
+    def self.define_api_version_command(command_context)
+      command_context.desc 'Display API Version'
+      command_context.command :api_version do |api_version_command|
         api_version_command.action do |global_options, options, args|
           self.new(global_options).api_version_command(options, args)
         end
       end
     end
 
-    # Define `manager_time` command
-    # @param command [GLI::Command] Parent command
+    # Define `manager_time` command_context
+    # @param command_context [CLI::App] The current context of the command.
     # @return [void]
-    def self.define_manager_time_command(command)
-      command.desc 'Display Manager time'
-      command.command :manager_time do |manager_time_command|
+    def self.define_manager_time_command(command_context)
+      command_context.desc 'Display Manager time'
+      command_context.command :manager_time do |manager_time_command|
         manager_time_command.action do |global_options, options, args|
           self.new(global_options).manager_time_command(options, args)
         end
       end
     end
 
-    # Define `list` command
-    # @param command [GLI::Command] Parent command
-    # @yieldparam list_command [GLI::Command] The just defined list command
-    # @yield [list_command] Gives the list command to the block
+    # Define `list` command_context
+    # @param command_context [CLI::App] The current context of the command.
+    # @yieldparam list_command [GLI::Command] The just defined list command_context
+    # @yield [list_command] Gives the list command_context to the block
     # @return [void]
-    def self.define_list_command(command)
-      command.desc "List #{self.transport_class_string}s"
-      command.command :list do |list_command|
+    def self.define_list_command(command_context)
+      command_context.desc "List #{self.transport_class_string}s"
+      command_context.command :list do |list_command|
         define_fields_flag(list_command)
         yield list_command if block_given?
         list_command.action do |global_options, options, args|
@@ -310,14 +408,14 @@ module Dsc
       end
     end
 
-    # Define `schema` command
-    # @param command [GLI::Command] Parent command
-    # @yieldparam schema_command [GLI::Command] The just defined schema command
-    # @yield [schema_command] Gives the schema command to the block
+    # Define `schema` command_context
+    # @param command_context [CLI::App] The current context of the command.
+    # @yieldparam schema_command [GLI::Command] The just defined schema command_context
+    # @yield [schema_command] Gives the schema command_context to the block
     # @return [void]
-    def self.define_schema_command(command)
-      command.desc "Show #{self.transport_class_string} schema"
-      command.command :schema do |schema_command|
+    def self.define_schema_command(command_context)
+      command_context.desc "Show #{self.transport_class_string} schema"
+      command_context.command :schema do |schema_command|
         yield schema_command if block_given?
         schema_command.action do |global_options, options, args|
           self.new(global_options).schema_command(options, args)
