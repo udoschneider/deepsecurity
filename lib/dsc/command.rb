@@ -60,10 +60,16 @@ module Dsc
       valid_fields.join(", ")
     end
 
-    def parse_fields(string)
-      fields = string.split(",").map(&:strip)
+    def parse_fields(fields_string_or_filename)
+      filename = File.absolute_path(fields_string_or_filename)
+      if File.exists?(filename)
+        fields_string = File.read(filename)
+      else
+        fields_string = fields_string_or_filename
+      end
+      fields = fields_string.split(",").map(&:strip)
       unknown_fields = fields.reject { |each| self.class.transport_class.has_attribute_chain(each) }
-      raise "Unknown field found (#{unknown_fields.join(', ')}) - known fields are: #{self.class.valid_fields.join(', ')}" unless unknown_fields.empty?
+      raise "Unknown filename or field found (#{unknown_fields.join(', ')}) - known fields are: #{self.class.valid_fields.join(', ')}" unless unknown_fields.empty?
       fields
     end
 
@@ -96,7 +102,7 @@ module Dsc
 
     def parse_detail_level(string)
       detail_level = DeepSecurity::EnumHostDetailLevel[string.upcase.strip]
-      raise "Unknown detail level filter" detail_level.nil?
+      raise "Unknown detail level filter" if detail_level.nil?
       detail_level
     end
 
@@ -188,7 +194,7 @@ module Dsc
     end
 
     def self.define_fields_argument(command)
-      command.desc "A comma separated list of fields to display. (Available fields: #{self.valid_fields_string})"
+      command.desc "A comma separated list of fields to display or a file containing those fields. (Available fields: #{self.valid_fields_string})"
       command.default_value self.default_fields_string
       command.flag [:fields]
     end
