@@ -337,20 +337,36 @@ module SavonHelper
 
   end
 
+  # StringMapping maps Savon data to Ruby strings.
   class StringMapping < TypeMapping
 
+    # @!group Converting
+
+    # Convert from Savon data to Ruby strings
+    # @param data [Hash, String] Source Savon data
+    # @return [String]
     def from_savon_data(data)
       data.to_s
     end
 
+    # Convert from Ruby string type to Savon data
+    # @param value [String] Source Ruby data
+    # @return [String]
     def to_savon_data(value)
       value.to_s
     end
 
+    # @!endgroup
+
+    # @abstract Return the class represented by the mapping.
+    # @todo Is this really neccessary?
+    # @return [Class]
     def object_klass
       String
     end
 
+    # Return the class description represented by the mapping.
+    # @return [String]
     def type_string
       "String"
     end
