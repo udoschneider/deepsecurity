@@ -86,14 +86,14 @@ module DeepSecurity
     end
 
     # Retrieves a Host by ID.
-    # @param [Integer] id Host ID
+    # @param id [Integer] Host ID
     # @return [Host]
     def self.find(id)
       dsm.hostRetrieve(id)
     end
 
     # Retrieves a Host by name.
-    # @param [String] hostname hostname
+    # @param hostname [String] hostname
     # @return [Host]
     def self.find_by_name(hostname)
       dsm.hostRetrieveByName(hostname)
