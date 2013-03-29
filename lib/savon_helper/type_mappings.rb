@@ -56,6 +56,290 @@ module SavonHelper
 
   end
 
+  # BooleanMapping maps Savon data to Ruby Booleans.
+  class BooleanMapping < TypeMapping
+
+    # @!group Converting
+
+    # Convert from Savon data to Ruby Boolean
+    # @param data [Hash, Boolean, String] Source Savon data
+    # @return [Boolean]
+    def from_savon_data(data)
+      data.to_s == "true"
+    end
+
+    # Convert from Ruby Boolean type to Savon data
+    # @param value [Boolean] Source Ruby data
+    # @return [String]
+    def to_savon_data(value)
+      value.to_s
+    end
+
+    # @!endgroup
+
+    # Return the class description represented by the mapping.
+    # @return [String]
+    def type_string
+      "bool"
+    end
+
+  end
+
+  # IntegerMapping maps Savon data to Ruby integers.
+  class IntegerMapping < TypeMapping
+
+    # @!group Converting
+
+    # Convert from Savon data to Ruby integers
+    # @param data [Hash, String] Source Savon data
+    # @return [Integer]
+    def from_savon_data(data)
+      Integer(data.to_s)
+    end
+
+    # Convert from Ruby float type to Savon data
+    # @param value [Integer] Source Ruby data
+    # @return [String]
+    def to_savon_data(value)
+      value.to_s
+    end
+
+    # @!endgroup
+
+    # Return the class description represented by the mapping.
+    # @return [String]
+    def type_string
+      "int"
+    end
+  end
+
+  # FloatMapping maps Savon data to Ruby floats.
+  class FloatMapping < TypeMapping
+
+    # @!group Converting
+
+    # Convert from Savon data to Ruby floats
+    # @param data [Hash, String] Source Savon data
+    # @return [Float]
+    def from_savon_data(data)
+      data.to_f
+    end
+
+    # Convert from Ruby float type to Savon data
+    # @param value [Float] Source Ruby data
+    # @return [String]
+    def to_savon_data(value)
+      value.to_s
+    end
+
+    # @!endgroup
+
+    # Return the class description represented by the mapping.
+    # @return [String]
+    def type_string
+      "float"
+    end
+
+  end
+
+  # StringMapping maps Savon data to Ruby strings.
+  class StringMapping < TypeMapping
+
+    # @!group Converting
+
+    # Convert from Savon data to Ruby strings
+    # @param data [Hash, String] Source Savon data
+    # @return [String]
+    def from_savon_data(data)
+      data.to_s
+    end
+
+    # Convert from Ruby string type to Savon data
+    # @param value [String] Source Ruby data
+    # @return [String]
+    def to_savon_data(value)
+      value.to_s
+    end
+
+    # @!endgroup
+
+    # @abstract Return the class represented by the mapping.
+    # @todo Is this really neccessary?
+    # @return [Class]
+    def object_klass
+      String
+    end
+
+    # Return the class description represented by the mapping.
+    # @return [String]
+    def type_string
+      "String"
+    end
+
+  end
+
+  # DatetimeMapping maps Savon data to Ruby DateTimes.
+  class DatetimeMapping < TypeMapping
+
+    # @!group Converting
+
+    # Convert from Savon data to Ruby datetime
+    # @param data [Hash, String] Source Savon data
+    # @return [DateTime]
+    def from_savon_data(data)
+      DateTime.parse(data.to_s)
+    end
+
+    # Convert from Ruby DateTime type to Savon data
+    # @param value [DateTime] Source Ruby data
+    # @return [String]
+    def to_savon_data(value)
+      value.to_datetime.to_s
+    end
+
+    # @!endgroup
+
+    # Return the class description represented by the mapping.
+    # @return [String]
+    def type_string
+      "datetime"
+    end
+
+  end
+
+  # IPAddressMapping maps Savon data to Ruby IP Address String.
+  # @note Currently IPAddressMapping only does a from/to String mapping. The IP Address is not parsed in any way!
+  class IPAddressMapping < TypeMapping
+
+    # @!group Converting
+
+    # Convert from Savon data to Ruby IP Address String
+    # @param data [Hash, String] Source Savon data
+    # @return [String]
+    def from_savon_data(data)
+      data.to_s
+    end
+
+    # Convert from Ruby IP Address String to Savon data
+    # @param value [Integer] Source Ruby data
+    # @return [String]
+    def to_savon_data(value)
+      value.to_s
+    end
+
+    # @!endgroup
+
+    # Return the class description represented by the mapping.
+    # @return [String]
+    def type_string
+      "IPAddress"
+    end
+
+  end
+
+  # EnumMapping maps Savon integers to Ruby symbols.
+  class EnumMapping < TypeMapping
+
+    # A new instance of EnumMapping with description and enum hash enum.
+    # @param enum [Hash{String => Symbol}] Mapping between Savon Strings and Ruby Symbols.
+    # @param description [String]
+    # @return [ArrayMapping]
+    def initialize(enum, description='')
+      super(description)
+      @enum = enum
+    end
+
+    # @!group Converting
+
+    # Convert from Savon enum-String to Ruby Symbol
+    # @param data [String] Source Savon data
+    # @return [Symbol, nil]
+    def from_savon_data(data)
+      @enum[data]
+    end
+
+    # Convert from Ruby DateTime Symbol to  Savon enum-String
+    # @param value [Symbol] Source Ruby data
+    # @return [String]
+    def to_savon_data(value)
+      @enum.key(value)
+    end
+
+    # @!endgroup
+
+    # Return the class description represented by the mapping.
+    # @return [String]
+    def type_string
+      "enum<#{@enum.values.join(', ')}>"
+    end
+
+  end
+
+  # ObjectMapping maps Savon data to Ruby Objects.
+  class ObjectMapping < TypeMapping
+
+    # A new instance of ObjectMapping with description for class klass.
+    # @param klass [Class, #from_savon_data] A class which can create instances from Savon data and provide Savon data for export.
+    # @param description [String]
+    # @return [ObjectMapping]
+    def initialize(klass, description='')
+      super(description)
+      @klass = klass
+    end
+
+    # @!group Converting
+
+    # Convert from Savon data to Ruby Object.
+    # @param data [Hash, String] Source Savon data
+    # @return [SavonHelper::MappingObject, #from_savon_data]
+    def from_savon_data(data)
+      @klass.from_savon_data(data)
+    end
+
+    # @!endgroup
+
+    # @abstract Return the class represented by the mapping.
+    # @return [Class]
+    def object_klass
+      @klass
+    end
+
+    # Return the class description represented by the mapping.
+    # @return [String]
+    def type_string
+      "#{@klass}"
+    end
+
+  end
+
+  # HintMapping maps Savon data to Ruby objects of type klass (r/o).
+  class HintMapping < TypeMapping
+
+    # A new instance of ObjectMapping with description for class klass.
+    # @param klass [Class] A class returned by the hint accessor
+    # @param description [String]
+    # @return [HintMapping]
+    def initialize(klass, description='')
+      super(description)
+      @klass = klass
+    end
+
+    # @!endgroup
+
+    # @abstract Return the class represented by the mapping.
+    # @return [Class]
+    def object_klass
+      @klass
+    end
+
+    # Return the class description represented by the mapping.
+    # @return [String]
+    def type_string
+      "#{@klass}"
+    end
+
+  end
+
   # ArrayMapping maps Savon data to Ruby Arrays
   class ArrayMapping < TypeMapping
 
@@ -117,262 +401,6 @@ module SavonHelper
 
   end
 
-  # BooleanMapping maps Savon data to Ruby Booleans.
-  class BooleanMapping < TypeMapping
-
-    # @!group Converting
-
-    # Convert from Savon data to Ruby Boolean
-    # @param data [Hash, Boolean, String] Source Savon data
-    # @return [Boolean]
-    def from_savon_data(data)
-      data.to_s == "true"
-    end
-
-    # Convert from Ruby Boolean type to Savon data
-    # @param value [Boolean] Source Ruby data
-    # @return [String]
-    def to_savon_data(value)
-      value.to_s
-    end
-
-    # @!endgroup
-
-    # Return the class description represented by the mapping.
-    # @return [String]
-    def type_string
-      "bool"
-    end
-
-  end
-
-  # DatetimeMapping maps Savon data to Ruby DateTimes.
-  class DatetimeMapping < TypeMapping
-
-    # @!group Converting
-
-    # Convert from Savon data to Ruby datetime
-    # @param data [Hash, String] Source Savon data
-    # @return [DateTime]
-    def from_savon_data(data)
-      DateTime.parse(data.to_s)
-    end
-
-    # Convert from Ruby DateTime type to Savon data
-    # @param value [DateTime] Source Ruby data
-    # @return [String]
-    def to_savon_data(value)
-      value.to_datetime.to_s
-    end
-
-    # @!endgroup
-
-    # Return the class description represented by the mapping.
-    # @return [String]
-    def type_string
-      "datetime"
-    end
-
-  end
-
-  # EnumMapping maps Savon integers to Ruby symbols.
-  class EnumMapping < TypeMapping
-
-    # A new instance of EnumMapping with description and enum hash enum.
-    # @param enum [Hash{String => Symbol}] Mapping between Savon Strings and Ruby Symbols.
-    # @param description [String]
-    # @return [ArrayMapping]
-    def initialize(enum, description='')
-      super(description)
-      @enum = enum
-    end
-
-    # @!group Converting
-
-    # Convert from Savon enum-String to Ruby Symbol
-    # @param data [String] Source Savon data
-    # @return [Symbol, nil]
-    def from_savon_data(data)
-      @enum[data]
-    end
-
-    # Convert from Ruby DateTime Symbol to  Savon enum-String
-    # @param value [Symbol] Source Ruby data
-    # @return [String]
-    def to_savon_data(value)
-      @enum.key(value)
-    end
-
-    # @!endgroup
-
-    # Return the class description represented by the mapping.
-    # @return [String]
-    def type_string
-      "enum<#{@enum.values.join(', ')}>"
-    end
-
-  end
-
-  # FloatMapping maps Savon data to Ruby floats.
-  class FloatMapping < TypeMapping
-
-    # @!group Converting
-
-    # Convert from Savon data to Ruby floats
-    # @param data [Hash, String] Source Savon data
-    # @return [Float]
-    def from_savon_data(data)
-      data.to_f
-    end
-
-    # Convert from Ruby float type to Savon data
-    # @param value [Float] Source Ruby data
-    # @return [String]
-    def to_savon_data(value)
-      value.to_s
-    end
-
-    # @!endgroup
-
-    # Return the class description represented by the mapping.
-    # @return [String]
-    def type_string
-      "float"
-    end
-
-  end
-
-  # IntegerMapping maps Savon data to Ruby integers.
-  class IntegerMapping < TypeMapping
-
-    # @!group Converting
-
-    # Convert from Savon data to Ruby integers
-    # @param data [Hash, String] Source Savon data
-    # @return [Integer]
-    def from_savon_data(data)
-      Integer(data.to_s)
-    end
-
-    # Convert from Ruby float type to Savon data
-    # @param value [Integer] Source Ruby data
-    # @return [String]
-    def to_savon_data(value)
-      value.to_s
-    end
-
-    # @!endgroup
-
-    # Return the class description represented by the mapping.
-    # @return [String]
-    def type_string
-      "int"
-    end
-  end
-
-  # IPAddressMapping maps Savon data to Ruby IP Address String.
-  # @note Currently IPAddressMapping only does a from/to String mapping. The IP Address is not parsed in any way!
-  class IPAddressMapping < TypeMapping
-
-    # @!group Converting
-
-    # Convert from Savon data to Ruby IP Address String
-    # @param data [Hash, String] Source Savon data
-    # @return [String]
-    def from_savon_data(data)
-      data.to_s
-    end
-
-    # Convert from Ruby IP Address String to Savon data
-    # @param value [Integer] Source Ruby data
-    # @return [String]
-    def to_savon_data(value)
-      value.to_s
-    end
-
-    # @!endgroup
-
-    # Return the class description represented by the mapping.
-    # @return [String]
-    def type_string
-      "IPAddress"
-    end
-
-  end
-
-  # ObjectMapping maps Savon data to Ruby Objects.
-  class ObjectMapping < TypeMapping
-
-    # A new instance of ObjectMapping with description for class klass.
-    # @param klass [Class, #from_savon_data] A class which can create instances from Savon data and provide Savon data for export.
-    # @param description [String]
-    # @return [ObjectMapping]
-    def initialize(klass, description='')
-      super(description)
-      @klass = klass
-    end
-
-    # @!group Converting
-
-    # Convert from Savon data to Ruby Object.
-    # @param data [Hash, String] Source Savon data
-    # @return [SavonHelper::MappingObject, #from_savon_data]
-    def from_savon_data(data)
-      @klass.from_savon_data(data)
-    end
-
-    # @!endgroup
-
-    # @abstract Return the class represented by the mapping.
-    # @return [Class]
-    def object_klass
-      @klass
-    end
-
-    # Return the class description represented by the mapping.
-    # @return [String]
-    def type_string
-      "#{@klass}"
-    end
-
-  end
-
-  # StringMapping maps Savon data to Ruby strings.
-  class StringMapping < TypeMapping
-
-    # @!group Converting
-
-    # Convert from Savon data to Ruby strings
-    # @param data [Hash, String] Source Savon data
-    # @return [String]
-    def from_savon_data(data)
-      data.to_s
-    end
-
-    # Convert from Ruby string type to Savon data
-    # @param value [String] Source Ruby data
-    # @return [String]
-    def to_savon_data(value)
-      value.to_s
-    end
-
-    # @!endgroup
-
-    # @abstract Return the class represented by the mapping.
-    # @todo Is this really neccessary?
-    # @return [Class]
-    def object_klass
-      String
-    end
-
-    # Return the class description represented by the mapping.
-    # @return [String]
-    def type_string
-      "String"
-    end
-
-  end
-
   # MissingMapping maps Savon data to itself (no conversion).
   class MissingMapping < TypeMapping
 
@@ -402,33 +430,6 @@ module SavonHelper
 
   end
 
-  # HintMapping maps Savon data to Ruby objects of type klass (r/o).
-  class HintMapping < TypeMapping
-
-    # A new instance of ObjectMapping with description for class klass.
-    # @param klass [Class] A class returned by the hint accessor
-    # @param description [String]
-    # @return [HintMapping]
-    def initialize(klass, description='')
-      super(description)
-      @klass = klass
-    end
-
-    # @!endgroup
-
-    # @abstract Return the class represented by the mapping.
-    # @return [Class]
-    def object_klass
-      @klass
-    end
-
-    # Return the class description represented by the mapping.
-    # @return [String]
-    def type_string
-      "#{@klass}"
-    end
-
-  end
 
   # Define a MissingMapping for the given options
   # @todo Check if mappings can be derived from klass
