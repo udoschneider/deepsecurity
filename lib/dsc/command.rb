@@ -157,19 +157,72 @@ module Dsc
 
     # @endgroup
 
+    # @group Detail level flag
+
+    # Valid detail levels
+    # @return [Array<String>] Valid detail levels
     def self.valid_detail_levels
       DeepSecurity::EnumHostDetailLevel.keys()
     end
 
+    # Valid detail levels for help string
+    # @return [String]  Valid detail levels for help string
     def self.valid_detail_levels_string
       valid_detail_levels.join(", ")
     end
 
-    def parse_detail_level(string)
+    # Parse detail_level argument
+    # @return [EnumHostDetailLevel] Detail level
+    def parse_detail_level(argument)
       detail_level = DeepSecurity::EnumHostDetailLevel[string.upcase.strip]
       raise "Unknown detail level filter" if detail_level.nil?
       detail_level
     end
+
+    # Define detail_level flag
+    # @return [void]
+    def self.define_detail_level_flag(command)
+      command.flag [:detail_level],
+                   :desc => "A detail level specifiying the extent of data returned. (Available values: #{self.valid_detail_levels_string})",
+                   :default_value => "low"
+    end
+
+    # @endgroup
+
+    # @group Command definitions
+
+    # Define `list` command
+    # @param command [GLI::Command] Parent command
+    # @yieldparam list [GLI::Command] The just defined list command
+    # @yield [list] Gives the list command to the block
+    # @return [void]
+    def self.define_list_command(command)
+      command.desc "List #{self.transport_class_string}s"
+      command.command :list do |list|
+        define_fields_flag(list)
+        yield list if block_given?
+        list.action do |global_options, options, args|
+          self.new(global_options).list(options, args)
+        end
+      end
+    end
+
+    # Define `schema` command
+    # @param command [GLI::Command] Parent command
+    # @yieldparam list [GLI::Command] The just defined schema command
+    # @yield [list] Gives the schema command to the block
+    # @return [void]
+    def self.define_schema_command(command)
+      command.desc "Show #{self.transport_class_string} schema"
+      command.command :schema do |schema|
+        yield schema if block_given?
+        schema.action do |global_options, options, args|
+          self.new(global_options).print_schema(options, args)
+        end
+      end
+    end
+
+    # @endgroup
 
     def output
       unless @output == '--'
@@ -222,33 +275,6 @@ module Dsc
           output.puts "#{key} (#{schema[key].type_string}): #{schema[key].description}"
         end
       end
-    end
-
-    def self.define_list_command(command)
-      command.desc "List #{self.transport_class_string}s"
-      command.command :list do |list|
-        define_fields_flag(list)
-        yield list if block_given?
-        list.action do |global_options, options, args|
-          self.new(global_options).list(options, args)
-        end
-      end
-    end
-
-    def self.define_schema_command(command)
-      command.desc "Show #{self.transport_class_string} schema"
-      command.command :schema do |schema|
-        yield schema if block_given?
-        schema.action do |global_options, options, args|
-          self.new(global_options).print_schema(options, args)
-        end
-      end
-    end
-
-    def self.define_detail_level_argument(command)
-      command.desc "A detail level specifiying the extent of data returned. (Available values: #{self.valid_detail_levels_string})"
-      command.default_value "low"
-      command.flag [:detail_level]
     end
 
   end

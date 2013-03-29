@@ -64,7 +64,7 @@ module Dsc
 
     def self.define_list_command(c)
       super(c) do |list|
-        define_detail_level_argument(list)
+        define_detail_level_flag(list)
       end
     end
 
