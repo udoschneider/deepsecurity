@@ -403,7 +403,7 @@ module Dsc
         define_fields_flag(list_command)
         yield list_command if block_given?
         list_command.action do |global_options, options, args|
-          self.new(global_options).list(options, args)
+          self.new(global_options).list_command(options, args)
         end
       end
     end
