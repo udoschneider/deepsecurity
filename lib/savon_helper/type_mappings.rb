@@ -430,6 +430,12 @@ module SavonHelper
 
   end
 
+  # Define a MissingMapping for the given options
+  # @todo Check if mappings can be derived from klass
+  # @param klass [Class] The class to define the mapping for.
+  # @param ivar_name [Symbol] The name of the ivar/accessor to hold/access the value
+  # @param value [Object] The value to set the ivar to.
+  # @param mappings [Hash{Symbol=>TypeMapping}] The mappings hash to add the HintMapping to.
   def self.define_missing_type_mapping(klass, ivar_name, value, mappings)
     message = "No type mapping for #{klass}@#{ivar_name} = #{value}!"
     DeepSecurity::Manager.current.logger.warn(message)
