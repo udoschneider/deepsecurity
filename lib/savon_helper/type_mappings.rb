@@ -261,6 +261,8 @@ module SavonHelper
       value.to_s
     end
 
+    # @!endgroup
+
     # Return the class description represented by the mapping.
     # @return [String]
     def type_string
@@ -268,16 +270,30 @@ module SavonHelper
     end
   end
 
+  # IPAddressMapping maps Savon data to Ruby IP Address String.
+  # @note Currently IPAddressMapping only does a from/to String mapping. The IP Address is not parsed in any way!
   class IPAddressMapping < TypeMapping
 
+    # @!group Converting
+
+    # Convert from Savon data to Ruby IP Address String
+    # @param data [Hash, String] Source Savon data
+    # @return [String]
     def from_savon_data(data)
       data.to_s
     end
 
+    # Convert from Ruby IP Address String to Savon data
+    # @param value [Integer] Source Ruby data
+    # @return [String]
     def to_savon_data(value)
       value.to_s
     end
 
+    # @!endgroup
+
+    # Return the class description represented by the mapping.
+    # @return [String]
     def type_string
       "IPAddress"
     end
