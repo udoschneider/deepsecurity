@@ -175,21 +175,38 @@ module SavonHelper
 
   end
 
+  # EnumMapping maps Savon integers to Ruby symbols.
   class EnumMapping < TypeMapping
 
+    # A new instance of EnumMapping with description and enum hash enum.
+    # @param enum [Hash{String => Symbol}] Mapping between Savon Strings and Ruby Symbols.
+    # @param description [String]
+    # @return [ArrayMapping]
     def initialize(enum, description='')
       super(description)
       @enum = enum
     end
 
+    # @!group Converting
+
+    # Convert from Savon enum-String to Ruby Symbol
+    # @param data [String] Source Savon data
+    # @return [Symbol, nil]
     def from_savon_data(data)
       @enum[data]
     end
 
+    # Convert from Ruby DateTime Symbol to  Savon enum-String
+    # @param value [Symbol] Source Ruby data
+    # @return [String]
     def to_savon_data(value)
       @enum.key(value)
     end
 
+    # @!endgroup
+
+    # Return the class description represented by the mapping.
+    # @return [String]
     def type_string
       "enum<#{@enum.values.join(', ')}>"
     end
