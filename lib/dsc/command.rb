@@ -188,7 +188,7 @@ module Dsc
     end
 
     def self.define_fields_argument(command)
-      command.desc "A comma separated list of fields to display. (Available fields: #{self.valid_fields_string})"
+      command.desc "A comma separated list of fields to display or a file containing those fields. (Available fields: #{self.valid_fields_string})"
       command.default_value self.default_fields_string
       command.flag [:fields]
     end
