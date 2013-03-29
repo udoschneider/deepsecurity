@@ -50,7 +50,7 @@ module Dsc
       valid_debug_levels.join(", ")
     end
 
-    # Parse debug level
+    # Parse debug level argument
     # @return [nil, DeepSecurity::LOG_MAPPING] Return parsed debug level
     def parse_debug_level(argument)
       return nil if argument.blank?
@@ -58,32 +58,47 @@ module Dsc
       :debug
     end
 
-    # Define debug level argument
+    # Define debug level flag
     # @return [void]
-    def self.define_debug_flag(c)
-      c.flag [:d, :debug], :desc => "Enable client debug output. (One of #{Dsc::Command.valid_debug_levels_string})", :arg_name => 'debug_level'
+    def self.define_debug_flag(command)
+      command.flag [:d, :debug],
+                   :desc => "Enable client debug output. (One of #{Dsc::Command.valid_debug_levels_string})",
+                   :arg_name => 'debug_level'
     end
 
     # @endgroup
 
+    # @group Fields flag
+
+    # Default fields if no argument is given
+    # @note Needs to be overridden by subclass
+    # @return [Array<String>] Default fields if no argument is given
     def self.default_fields
       []
     end
 
+    # String of default fields for help string
+    # @return [String]  String of default fields for help string
     def self.default_fields_string
       default_fields.join(",")
     end
 
+    # Sorted list of available fields
+    # @return [Array<String>] Sorted list of available fields
     def self.valid_fields
       transport_class.defined_attributes.sort
     end
 
+    # String of available fields for help string
+    # @return [String]  String of available fields for help string
     def self.valid_fields_string
       valid_fields.join(", ")
     end
 
+    # Parse fields argument. Either split the string or read from file
+    # @return [Array<String>] parse fields
     def parse_fields(fields_string_or_filename)
-      filename = File.absolute_path(fields_string_or_filename)
+      filename = File.absolute_path(fields_string_or_filename_argument)
       if File.exists?(filename)
         fields_string = File.read(filename)
       else
@@ -94,6 +109,16 @@ module Dsc
       raise "Unknown filename or field found (#{unknown_fields.join(', ')}) - known fields are: #{self.class.valid_fields.join(', ')}" unless unknown_fields.empty?
       fields
     end
+
+    # Define fields flag
+    # @return [void]
+    def self.define_fields_flag(command)
+      command.flag [:fields],
+                   :desc => "A comma separated list of fields to display or a file containing those fields. (Available fields: #{self.valid_fields_string})",
+                   :default_value => self.default_fields_string
+    end
+
+    # @endgroup
 
     def self.valid_time_filters
       {
@@ -184,7 +209,7 @@ module Dsc
     def self.define_list_command(command)
       command.desc "List #{self.transport_class_string}s"
       command.command :list do |list|
-        define_fields_argument(list)
+        define_fields_flag(list)
         yield list if block_given?
         list.action do |global_options, options, args|
           self.new(global_options).list(options, args)
@@ -206,12 +231,6 @@ module Dsc
       command.desc "A filter specifying the time interval to query (One of #{self.valid_time_filters_string})"
       command.default_value "last_day"
       command.flag [:time_filter]
-    end
-
-    def self.define_fields_argument(command)
-      command.desc "A comma separated list of fields to display or a file containing those fields. (Available fields: #{self.valid_fields_string})"
-      command.default_value self.default_fields_string
-      command.flag [:fields]
     end
 
     def self.define_detail_level_argument(command)
