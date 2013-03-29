@@ -24,6 +24,11 @@ module DeepSecurity
                          'Computer platform'
     attr_integer_accessor :security_profile_id,
                           'Assigned SecurityProfileTransport ID'
+
+    hint_object_accessor :host_group,
+                         HostGroup,
+                         'The host group this host belongs to'
+
     # ABOVE is duplicates from Host!
 
     attr_string_accessor :anti_malware_classic_pattern_version,
@@ -119,7 +124,7 @@ module DeepSecurity
     array_object_accessor :host_interfaces,
                           HostInterface
 
-    # cache_by_aspect :id, :name
+    cache_by_aspect :id, :name
 
     # @!group High-Level SOAP Wrapper
 
@@ -129,6 +134,11 @@ module DeepSecurity
     # @return [Array<HostDetail>]
     def self.find_all(host_filter, detail_level)
       dsm.hostDetailRetrieve(host_filter, detail_level)
+    end
+
+    def host_group
+      return nil if host_group_id.nil?
+      HostGroup.find(host_group_id)
     end
 
     # @!endgroup

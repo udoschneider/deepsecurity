@@ -33,6 +33,10 @@ module DeepSecurity
     attr_integer_accessor :security_profile_id,
                           'Assigned SecurityProfileTransport ID'
 
+    hint_object_accessor :host_group,
+                         HostGroup,
+                         'The host group this host belongs to'
+
     cache_by_aspect :id, :name
 
     # @!group High-Level Screenscraping Wrapper
@@ -84,7 +88,7 @@ module DeepSecurity
     # Retrieves a Host by ID.
     # @param [Integer] id Host ID
     # @return [Host]
-    def self.find_by_id(id)
+    def self.find(id)
       dsm.hostRetrieve(id)
     end
 
@@ -94,6 +98,11 @@ module DeepSecurity
     def self.find_by_name(hostname)
       dsm.hostRetrieveByName(hostname)
     end
+
+    def host_group
+      HostGroup.find(host_group_id)
+    end
+
     #@!endgroup
   end
 

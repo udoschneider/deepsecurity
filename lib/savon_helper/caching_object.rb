@@ -6,7 +6,7 @@ module SavonHelper
 
     @@cache_aspects = Hash.new()
 
-    # @group Caching
+    # @!group Caching
 
     def self.cache_aspects
       aspect = @@cache_aspects[self]

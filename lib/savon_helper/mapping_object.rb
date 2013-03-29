@@ -17,20 +17,20 @@ module SavonHelper
     end
 
     # Helper Method deserializing the SOAP response into an object
-    def request_object(method_name, object_class, soap_body={})
-      object_class.from_savon_data(self, send_soap(method_name, soap_body))
+    def request_object(method_name, object_class, arguments={})
+      object_class.from_savon_data(send_soap(method_name, arguments))
     end
 
     # Helper Method deserializing the SOAP response into an object
-    def request_array(method_name, object_class, collection_name = nil, soap_body={})
-      data = send_soap(method_name, soap_body)
+    def request_array(method_name, object_class, collection_name = nil, arguments={})
+      data = send_soap(method_name, arguments)
       data = data[collection_name] unless collection_name.blank?
       SavonHelper::ArrayMapping.new(SavonHelper::ObjectMapping.new(object_class)).from_savon_data(data)
     end
 
     # @!endgroup
 
-    # @group Mapping
+    # @!group Mapping
 
     # Return an initialized instance with the values from the (type-converted) hash. Store the instance in cache
     # if cacheable.
@@ -133,7 +133,7 @@ module SavonHelper
       return mapping.to_savon_data(value)
     end
 
-    # @group DSL to define attributes mapping
+    # @!group DSL to define attributes mapping
 
     # @macro [attach] attr_boolean_accessor
     #   @!attribute [rw] $3
@@ -407,7 +407,7 @@ module SavonHelper
       end
     end
 
-    # @endgroup
+    # @!endgroup
 
   end
 

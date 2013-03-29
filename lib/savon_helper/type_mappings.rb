@@ -179,7 +179,7 @@ module SavonHelper
     end
 
     def type_string
-      "enum"
+      "enum<#{@enum.values.join(', ')}>"
     end
 
   end
@@ -300,7 +300,7 @@ module SavonHelper
     end
 
     def type_string
-      "HINT"
+      "#{@klass}"
     end
 
   end
