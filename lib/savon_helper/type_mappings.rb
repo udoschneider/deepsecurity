@@ -213,16 +213,29 @@ module SavonHelper
 
   end
 
+  # FloatMapping maps Savon data to Ruby floats.
   class FloatMapping < TypeMapping
 
+    # @!group Converting
+
+    # Convert from Savon data to Ruby floats
+    # @param data [Hash, String] Source Savon data
+    # @return [Float]
     def from_savon_data(data)
       data.to_f
     end
 
+    # Convert from Ruby float type to Savon data
+    # @param value [Float] Source Ruby data
+    # @return [String]
     def to_savon_data(value)
       value.to_s
     end
 
+    # @!endgroup
+
+    # Return the class description represented by the mapping.
+    # @return [String]
     def type_string
       "float"
     end
