@@ -105,6 +105,11 @@ module Dsc
       end
     end
 
+    def to_display_string(value)
+      # return "XXX" if value.is_a?(DateTime) # @todo Add Time format
+      value.to_s
+    end
+
     # @!endgroup
 
     # @!group Misc global flags/options definitions

@@ -96,7 +96,7 @@ module Dsc
             progressBar.inc(75/hostDetails.size) if @show_progress_bar
             csv << fields.map do |attribute|
               begin
-                hostDetail.instance_eval(attribute)
+                to_display_string(hostDetail.instance_eval(attribute))
               rescue => e
                  "ERROR (#{e.message})"
               end
