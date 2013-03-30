@@ -48,6 +48,7 @@ module DeepSecurity
     # @param id [Integer] HostGroup ID
     # @return [HostGroup]
     def host_group(id)
+      return nil if id.nil?
       cache.fetch(HostGroup.cache_key(:id, id)) do
         interface.hostGroupRetrieve(id)
       end
@@ -57,6 +58,7 @@ module DeepSecurity
     # @param hostname [String] hostname
     # @return [HostGroup]
     def host_group_by_name(hostname)
+      return nil if hostname.blank?
       cache.fetch(HostGroup.cache_key(:name, name)) do
         interface.hostGroupRetrieveByName(hostname)
       end

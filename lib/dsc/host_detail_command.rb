@@ -98,7 +98,7 @@ module Dsc
               begin
                 hostDetail.instance_eval(attribute)
               rescue => e
-                "ERROR (#{e.message}"
+                 "ERROR (#{e.message})"
               end
             end
           end

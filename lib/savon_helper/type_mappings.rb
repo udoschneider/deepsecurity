@@ -18,14 +18,14 @@ module SavonHelper
     # @param data [Hash, Object] Source Savon data
     # @return [Object]
     def to_native(data)
-      logger.error { "#{self.class}##{__method__}(#{data.inspect}) not implemented!" }
+      raise "#{self.class}##{__method__}(#{data.inspect}) not implemented!"
     end
 
     # @abstract Convert from Ruby value type to Savon data
     # @param value [Object] Source Ruby value
     # @return [Object]
     def to_savon(value)
-      logger.error { "#{self.class}##{__method__}(#{value.inspect}) not implemented!" }
+      raise "#{self.class}##{__method__}(#{value.inspect}) not implemented!"
     end
 
     # @!endgroup
@@ -39,19 +39,13 @@ module SavonHelper
     # @abstract Return the class represented by the mapping.
     # @return [Class]
     def object_klass
-      logger.error { "#{self.class}##{__method__}() not implemented!" }
+      raise "#{self.class}##{__method__}() not implemented!"
     end
 
     # @abstract Return the class description represented by the mapping.
     # @return [String]
     def type_string
-      logger.error { "#{self.class}##{__method__}() not implemented!" }
-    end
-
-    # The current logger
-    # @return [Logger]
-    def logger
-      DeepSecurity::logger
+      raise "#{self.class}##{__method__}() not implemented!"
     end
 
   end
@@ -76,6 +70,13 @@ module SavonHelper
     end
 
     # @!endgroup
+
+
+    # Return the class represented by the mapping.
+    # @return [TrueClass] Return TrueClass as Ruby as no common Boolan class
+    def object_klass
+      TrueClass
+    end
 
     # Return the class description represented by the mapping.
     # @return [String]
@@ -106,6 +107,12 @@ module SavonHelper
 
     # @!endgroup
 
+    # Return the class represented by the mapping.
+    # @return [Integer]
+    def object_klass
+      Integer
+    end
+
     # Return the class description represented by the mapping.
     # @return [String]
     def type_string
@@ -133,6 +140,12 @@ module SavonHelper
     end
 
     # @!endgroup
+
+    # Return the class represented by the mapping.
+    # @return [Float]
+    def object_klass
+      Float
+    end
 
     # Return the class description represented by the mapping.
     # @return [String]
@@ -178,6 +191,18 @@ module SavonHelper
 
   end
 
+  # IPAddressMapping maps Savon data to Ruby IP Address String.
+  # @note Currently IPAddressMapping only does a from/to String mapping. The IP Address is not parsed in any way!
+  class IPAddressMapping < StringMapping
+
+    # Return the class description represented by the mapping.
+    # @return [String]
+    def type_string
+      "IPAddress"
+    end
+
+  end
+
   # DatetimeMapping maps Savon data to Ruby DateTimes.
   class DatetimeMapping < TypeMapping
 
@@ -199,40 +224,16 @@ module SavonHelper
 
     # @!endgroup
 
+    # Return the class represented by the mapping.
+    # @return [DateTime]
+    def object_klass
+      DateTime
+    end
+
     # Return the class description represented by the mapping.
     # @return [String]
     def type_string
       "datetime"
-    end
-
-  end
-
-  # IPAddressMapping maps Savon data to Ruby IP Address String.
-  # @note Currently IPAddressMapping only does a from/to String mapping. The IP Address is not parsed in any way!
-  class IPAddressMapping < TypeMapping
-
-    # @!group Converting
-
-    # Convert from Savon data to Ruby IP Address String
-    # @param data [Hash, String] Source Savon data
-    # @return [String]
-    def to_native(data, interface)
-      data.to_s
-    end
-
-    # Convert from Ruby IP Address String to Savon data
-    # @param value [Integer] Source Ruby data
-    # @return [String]
-    def to_savon(value)
-      value.to_s
-    end
-
-    # @!endgroup
-
-    # Return the class description represented by the mapping.
-    # @return [String]
-    def type_string
-      "IPAddress"
     end
 
   end

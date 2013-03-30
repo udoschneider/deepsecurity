@@ -80,7 +80,7 @@ module DeepSecurity
     # @!group High-Level SOAP Wrapper
 
     def host_group
-      manager.host_group(host_group_id.to_i)
+      manager.host_group(host_group_id)
     end
 
     #@!endgroup
