@@ -25,34 +25,49 @@ module DeepSecurity
     # @!group High-Level SOAP Wrapper
 
     def parent_group
-      return nil if @parent_group_id.nil?
-      @dsm.host_group(@parent_group_id)
+      return nil if parent_group_id.nil?
+      manager.host_group(parent_group_id)
     end
+
+    # @!group High-Level SOAP Wrapper
+  end
+
+  class Manager
+
+    # @!group High-Level SOAP Wrapper
 
     # Retrieves HostGroups.
     # @return [Array<HostGroup>]
-    def self.all
-      dsm.hostGroupRetrieveAll()
+    def host_groups()
+      cache.fetch(HostGroup.cache_key(:all, :all)) do
+        interface.hostGroupRetrieveAll()
+      end
     end
 
     # Retrieves a HostGroup by ID.
     # @param id [Integer] HostGroup ID
     # @return [HostGroup]
-    def self.find(id)
-      dsm.hostGroupRetrieve(id)
+    def host_group(id)
+      return nil if id.nil?
+      cache.fetch(HostGroup.cache_key(:id, id)) do
+        interface.hostGroupRetrieve(id)
+      end
     end
 
     # Retrieves a HostGroup by name.
     # @param hostname [String] hostname
     # @return [HostGroup]
-    def self.find_by_name(hostname)
-      dsm.hostGroupRetrieveByName(hostname)
+    def host_group_by_name(hostname)
+      return nil if hostname.blank?
+      cache.fetch(HostGroup.cache_key(:name, name)) do
+        interface.hostGroupRetrieveByName(hostname)
+      end
     end
     #@!endgroup
 
   end
 
-  class Manager
+  class SOAPInterface
 
     # @!group Low-Level SOAP Wrapper
 
@@ -66,11 +81,9 @@ module DeepSecurity
     #
     # RETURNS
     #   HostGroupTransport object array.
-    def hostGroupRetrieveAll(sID = dsm.sID)
-      cache.fetch(HostGroup.cache_key(:all, :all)) do
-        request_array(:host_group_retrieve_all, HostGroup, nil,
-                      :sID => sID)
-      end
+    def hostGroupRetrieveAll(sID = manager.sID)
+      request_array(:host_group_retrieve_all, HostGroup, nil,
+                    :sID => sID)
     end
 
     # Retrieves a Host Group by ID.
@@ -84,12 +97,10 @@ module DeepSecurity
     #
     # RETURNS
     #   HostGroupTransport object.
-    def hostGroupRetrieve(id, sID = dsm.sID)
-      cache.fetch(HostGroup.cache_key(:id, id)) do
-        request_object(:host_group_retrieve, HostGroup,
-                       :id => id,
-                       :sID => sID)
-      end
+    def hostGroupRetrieve(id, sID = manager.sID)
+      request_object(:host_group_retrieve, HostGroup,
+                     :id => id,
+                     :sID => sID)
     end
 
 
@@ -104,12 +115,10 @@ module DeepSecurity
     #
     # RETURNS
     #   HostGroupTransport object.
-    def hostGroupRetrieveByName(name, sID = dsm.sID)
-      cache.fetch(HostGroup.cache_key(:name, name)) do
-        request_object(:host_group_retrieve_by_name, HostGroup,
-                       :name => name,
-                       :sID => sID)
-      end
+    def hostGroupRetrieveByName(name, sID = manager.sID)
+      request_object(:host_group_retrieve_by_name, HostGroup,
+                     :name => name,
+                     :sID => sID)
     end
 
     # @!endgroup

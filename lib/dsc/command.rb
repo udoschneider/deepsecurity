@@ -20,7 +20,7 @@ module Dsc
     # Transport class name without namespace
     # @return [String] Transport class name without namespace
     def self.transport_class_name
-      class_name = transport_class.name.split('::').last || ''
+      transport_class.name_without_namespace
     end
 
     #  Human readable transport class name without namespace
@@ -38,7 +38,7 @@ module Dsc
     # The schema of the transport class
     # @return [Hash<Symbol => SavonHelper::TypeMapping]
     def self.schema
-      transport_class.mappings
+      transport_class.all_type_mappings
     end
 
     # @!endgroup
@@ -93,16 +93,21 @@ module Dsc
     # @yield [manager] Gives the manager to the block
     # @return [void]
     def authenticate
-      connect do |dsm|
+      connect do |manager|
         begin
-          dsm.connect(@tenant, @username, @password)
-          yield dsm
+          manager.connect(@tenant, @username, @password)
+          yield manager
         rescue DeepSecurity::AuthenticationFailedException => e
           puts "Authentication failed! #{e.message}"
         ensure
-          dsm.disconnect()
+          manager.disconnect()
         end
       end
+    end
+
+    def to_display_string(value)
+      # return "XXX" if value.is_a?(DateTime) # @todo Add Time format
+      value.to_s
     end
 
     # @!endgroup
@@ -260,12 +265,12 @@ module Dsc
 
     # Parse fields argument. Either split the string or read from file
     # @return [Array<String>] parse fields
-    def parse_fields(fields_string_or_filename)
+    def parse_fields(fields_string_or_filename_argument)
       filename = File.absolute_path(fields_string_or_filename_argument)
       if File.exists?(filename)
         fields_string = File.read(filename)
       else
-        fields_string = fields_string_or_filename
+        fields_string = fields_string_or_filename_argument
       end
       fields = fields_string.split(",").map(&:strip)
       unknown_fields = fields.reject { |each| self.class.transport_class.has_attribute_chain(each) }
@@ -337,7 +342,7 @@ module Dsc
     # Parse detail_level argument
     # @return [EnumHostDetailLevel] Detail level
     def parse_detail_level(argument)
-      detail_level = DeepSecurity::EnumHostDetailLevel[string.upcase.strip]
+      detail_level = DeepSecurity::EnumHostDetailLevel[argument.upcase.strip]
       raise "Unknown detail level filter" if detail_level.nil?
       detail_level
     end
@@ -435,8 +440,8 @@ module Dsc
     # @return [void]
     def api_version_command(options, args)
       output do |output|
-        connect do |dsm|
-          output.puts dsm.api_version()
+        connect do |manager|
+          output.puts manager.api_version()
         end
       end
     end
@@ -449,8 +454,8 @@ module Dsc
     # @return [void]
     def manager_time_command(options, args)
       output do |output|
-        connect do |dsm|
-          output.puts dsm.manager_time()
+        connect do |manager|
+          output.puts manager.manager_time()
         end
       end
     end

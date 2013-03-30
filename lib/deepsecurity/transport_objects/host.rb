@@ -79,34 +79,60 @@ module DeepSecurity
 
     # @!group High-Level SOAP Wrapper
 
-    # Retrieves Hosts.
-    # @return [Array<Host>]
-    def self.all
-      dsm.hostRetrieveAll()
-    end
-
-    # Retrieves a Host by ID.
-    # @param id [Integer] Host ID
-    # @return [Host]
-    def self.find(id)
-      dsm.hostRetrieve(id)
-    end
-
-    # Retrieves a Host by name.
-    # @param hostname [String] hostname
-    # @return [Host]
-    def self.find_by_name(hostname)
-      dsm.hostRetrieveByName(hostname)
-    end
-
     def host_group
-      HostGroup.find(host_group_id)
+      manager.host_group(host_group_id)
     end
 
     #@!endgroup
   end
 
   class Manager
+
+    # @!group High-Level SOAP Wrapper
+
+    # Retrieves Hosts.
+    # @return [Array<Host>]
+    def hosts()
+      cache.fetch(Host.cache_key(:all, :all)) do
+        interface.hostRetrieveAll()
+      end
+    end
+
+    # Retrieves a Host by ID.
+    # @param id [Integer] Host ID
+    # @return [Host]
+    def host(id)
+      cache.fetch(Host.cache_key(:id, id)) do
+        interface.hostRetrieve(id)
+      end
+    end
+
+    # Retrieves a Host by name.
+    # @param hostname [String] hostname
+    # @return [Host]
+    def host_by_name(hostname)
+      cache.fetch(Host.cache_key(:name, hostname)) do
+        interface.hostRetrieveByName(hostname)
+      end
+    end
+
+    #@!endgroup
+
+    # @!group Low-Level Screenscraping Wrapper
+
+    def security_profile
+      Manager.current.security_progile(@security_profile_id)
+    end
+
+    def dpi_rule_identifiers_for_host(id, argument)
+      payload_filters2_show_rules(id, argument)
+      payload_filters2(:hostID => id, :arguments => argument).map { |hash| hash[:name].split(' ').first }
+    end
+    # @!endgroup
+
+  end
+
+  class SOAPInterface
 
     # @!group Low-Level SOAP Wrapper
 
@@ -120,11 +146,9 @@ module DeepSecurity
     #
     # RETURNS
     #   HostTransport object array.
-    def hostRetrieveAll(sID = dsm.sID)
-      cache.fetch(Host.cache_key(:all, :all)) do
-        request_array(:host_retrieve_all, Host, nil,
-                      :sID => sID)
-      end
+    def hostRetrieveAll(sID = manager.sID)
+      request_array(:host_retrieve_all, Host, nil,
+                    :sID => sID)
     end
 
     # Retrieves a Host by ID.
@@ -138,10 +162,8 @@ module DeepSecurity
     #
     # RETURNS
     #   HostTransport object.
-    def hostRetrieve(id, sID = dsm.sID)
-      cache.fetch(Host.cache_key(:id, id)) do
-        request_object(:host_retrieve, Host, :id => id, :sID => sID)
-      end
+    def hostRetrieve(id, sID = manager.sID)
+      request_object(:host_retrieve, Host, :id => id, :sID => sID)
     end
 
     # Retrieves a Host by name.
@@ -155,25 +177,12 @@ module DeepSecurity
     #
     # RETURNS
     #   HostTransport object.
-    def hostRetrieveByName(hostname, sID = dsm.sID)
-      cache.fetch(Host.cache_key(:name, hostname)) do
-        request_object(:host_retrieve_by_name, Host, :hostname => hostname, :sID => sID)
-      end
+    def hostRetrieveByName(hostname, sID = manager.sID)
+      request_object(:host_retrieve_by_name, Host, :hostname => hostname, :sID => sID)
     end
 
     # @!endgroup
 
-    # @!group Low-Level Screenscraping Wrapper
-
-    def security_profile
-      Manager.current.security_progile(@security_profile_id)
-    end
-
-    def dpi_rule_identifiers_for_host(id, argument)
-      payload_filters2_show_rules(id, argument)
-      payload_filters2(:hostID => id, :arguments => argument).map { |hash| hash[:name].split(' ').first }
-    end
-    # @!endgroup
 
   end
 
