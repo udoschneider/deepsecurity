@@ -4,33 +4,6 @@ module DeepSecurity
   # merging states of potentially multiple endpoints (i.e., Agent + Appliance).
   class HostDetail < Host
 
-
-    attr_integer_accessor :id
-    attr_string_accessor :name
-    attr_string_accessor :description
-
-    attr_string_accessor :display_name,
-                         'Computer display name'
-    attr_boolean_accessor :external,
-                          'Administrative external boolean for integration purposes.'
-    attr_string_accessor :external_id,
-                         'Administrative external ID for integration purposes.'
-    attr_integer_accessor :host_group_id,
-                          'Assigned HostGroupTransport ID'
-    attr_enum_accessor :host_type,
-                       EnumHostType,
-                       'Assigned host type'
-    attr_string_accessor :platform,
-                         'Computer platform'
-    attr_integer_accessor :security_profile_id,
-                          'Assigned SecurityProfileTransport ID'
-
-    hint_object_accessor :host_group,
-                         HostGroup,
-                         'The host group this host belongs to'
-
-    # ABOVE is duplicates from Host!
-
     attr_string_accessor :anti_malware_classic_pattern_version,
                          "Current version of the classic Anti-Malware pattern"
     attr_string_accessor :anti_malware_engine_version,
@@ -124,7 +97,11 @@ module DeepSecurity
     array_object_accessor :host_interfaces,
                           HostInterface
 
-    cache_by_aspect :id, :name
+    # cache_by_aspect :id, :name
+
+  end
+
+  class Manager
 
     # @!group High-Level SOAP Wrapper
 
@@ -132,20 +109,17 @@ module DeepSecurity
     # @param host_filter [HostFilter]
     # @param detail_level [EnumHostDetailLevel]
     # @return [Array<HostDetail>]
-    def self.find_all(host_filter, detail_level)
-      dsm.hostDetailRetrieve(host_filter, detail_level)
-    end
-
-    def host_group
-      return nil if host_group_id.nil?
-      HostGroup.find(host_group_id)
+    def host_details(host_filter, detail_level)
+      cache.fetch(HostDetail.cache_key(:all, :all)) do
+        interface.hostDetailRetrieve(host_filter, detail_level)
+      end
     end
 
     # @!endgroup
 
   end
 
-  class Manager
+  class SOAPInterface
 
     # @!group Low-Level SOAP Wrapper
 
@@ -161,13 +135,11 @@ module DeepSecurity
     #
     # RETURNS
     #   HostDetailTransport object array.
-    def hostDetailRetrieve(hostFilter, hostDetailLevel, sID = dsm.sID)
-      cache.fetch(HostDetail.cache_key(:all, :all)) do
-        request_array(:host_detail_retrieve, HostDetail, nil,
-                      :hostFilter => hostFilter.to_savon_data,
-                      :hostDetailLevel => EnumHostDetailLevel.key(hostDetailLevel),
-                      :sID => sID)
-      end
+    def hostDetailRetrieve(hostFilter, hostDetailLevel, sID = manager.sID)
+      request_array(:host_detail_retrieve, HostDetail, nil,
+                    :hostFilter => hostFilter.to_savon,
+                    :hostDetailLevel => EnumHostDetailLevel.key(hostDetailLevel),
+                    :sID => sID)
     end
 
     # @!endgroup

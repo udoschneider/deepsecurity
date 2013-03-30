@@ -85,10 +85,10 @@ module Dsc
       fields = parse_fields(options[:fields])
       detail_level = parse_detail_level(options[:detail_level])
       output do |output|
-        authenticate do |dsm|
+        authenticate do |manager|
           hostFilter = DeepSecurity::HostFilter.all_hosts
           progressBar = ProgressBar.new("host_status", 100) if @show_progress_bar
-          hostDetails = DeepSecurity::HostDetail.find_all(hostFilter, detail_level)
+          hostDetails = manager.host_details(hostFilter, detail_level)
           progressBar.set(25) if @show_progress_bar
           csv = CSV.new(output)
           csv << fields

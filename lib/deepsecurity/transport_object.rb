@@ -14,7 +14,11 @@ module DeepSecurity
   # @note
   #   It defines it's own DSL to specify attributes, caching and operation. This allows you to completely hide the
   #   type-conversion needed by Savon behind a regular Ruby object.
-  class TransportObject < DSObject
+  class TransportObject < SavonHelper::CachingObject
+
+    def manager
+      interface.manager
+    end
 
   end
 
