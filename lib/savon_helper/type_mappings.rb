@@ -299,7 +299,7 @@ module SavonHelper
     # Return the class description represented by the mapping.
     # @return [String]
     def type_string
-      "#{@klass.name_without_namespace}"
+      "HINT<#{@klass.name_without_namespace}>"
     end
 
   end
