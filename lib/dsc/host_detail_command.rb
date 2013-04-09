@@ -67,6 +67,7 @@ module Dsc
     def self.define_list_command(command_context)
       super(command_context) do |list_command|
         define_detail_level_flag(list_command)
+        define_time_format_flag(list_command)
       end
     end
 
