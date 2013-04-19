@@ -271,9 +271,7 @@ module Dsc
       if File.exists?(filename)
         fields_string = ""
         File.readlines(filename).each do |line|
-          unless line.starts_with?("#")
-            fields_string = fields_string + " " + line.match(/^([^#]*)(#.*$)?/).to_a[1]
-          end
+          fields_string = fields_string + " " + line.strip_comments
         end
       else
         fields_string = fields_string_or_filename_argument
