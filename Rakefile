@@ -15,4 +15,8 @@ task :windows_installer => :build do
   system("./windows-installer/iscc windows-installer/dsc.iss /dgemVersion=\"#{GEM_VERSION}\" /drubyVersion=\"#{RUBY_INSTALLER_VERSION}\"")
 end
 
+desc "Build index.html for S3 Bucket"
+task :s3_index do
+  system("./generate_s3_links.sh > index.html")
+end
 
