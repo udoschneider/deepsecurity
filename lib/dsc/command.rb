@@ -337,7 +337,7 @@ module Dsc
     # Valid detail levels for help string
     # @return [String]  Valid detail levels for help string
     def self.valid_detail_levels_string
-      valid_detail_levels.join(", ")
+      valid_detail_levels.map(&:downcase).join(", ")
     end
 
     # Parse detail_level argument
@@ -370,8 +370,7 @@ module Dsc
     # @return [void]
     def self.define_time_format_flag(command_context)
       command_context.flag [:time_format],
-                           :desc => "An strftime() compatible string to use for outputting date/time.",
-                           :default_value => ""
+                           :desc => "An strftime() compatible string to use for outputting date/time."
     end
 
     # @!endgroup
