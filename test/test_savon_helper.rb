@@ -11,5 +11,6 @@ class TestSavonHelper < Test::Unit::TestCase
   def test_strip_comments
     assert_equal "test", "test".strip_comments
     assert_equal "test ", "test #123".strip_comments
+    assert_equal "", "#123".strip_comments
   end
 end
