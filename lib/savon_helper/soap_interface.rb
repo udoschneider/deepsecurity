@@ -8,7 +8,8 @@ module SavonHelper
       @client = Savon.client(options.merge({:wsdl => wsdl_url,
                                             :logger => logger,
                                             :log_level => log_level,
-                                            :log => (!log_level.nil?)}))
+                                            :log => (!log_level.nil?),
+                                            :ssl_verify_mode => :none}))
       @logger = logger
     end
 
