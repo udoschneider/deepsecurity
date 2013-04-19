@@ -7,4 +7,8 @@ class TestSudoku < Test::Unit::TestCase
     assert_equal true, "".blank?
     assert_equal true, nil.blank?
   end
+
+  def test_name_without_namespace
+    assert_equal "HostDetail", DeepSecurity::HostDetail.name_without_namespace
+  end
 end
