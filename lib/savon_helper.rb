@@ -17,6 +17,10 @@ unless String.respond_to? :blank
     def blank?
       empty?()
     end
+
+    def strip_comments
+      self.match(/^([^#]*)(#.*$)?/).to_a[1]
+    end
   end
 
   class NilClass
