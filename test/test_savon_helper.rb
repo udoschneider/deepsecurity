@@ -13,4 +13,8 @@ class TestSavonHelper < Test::Unit::TestCase
     assert_equal "test ", "test #123".strip_comments
     assert_equal "", "#123".strip_comments
   end
+
+  def test_name_without_namespace
+    assert_equal "HostDetail", DeepSecurity::HostDetail.name_without_namespace
+  end
 end
