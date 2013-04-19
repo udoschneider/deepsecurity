@@ -106,7 +106,8 @@ module Dsc
     end
 
     def to_display_string(value)
-      return value.strftime($time_format) if (value.is_a?(DateTime) && !value.blank?)
+      return "" if value.blank?
+      return value.strftime($time_format) if (value.is_a?(DateTime) && !$time_format.nil?)
       value.to_s
     end
 
