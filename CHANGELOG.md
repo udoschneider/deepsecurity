@@ -9,6 +9,7 @@
 * Extracted savon TypeMapping functionality/DSL into seperate classes
 * Added `--detail_level` flag for `host_detail` command
 * Added `-time_format` flag to specifiy time format
+* Extended `-fields` to accept a filename to read the fields from
 
 ### 0.0.19
 
