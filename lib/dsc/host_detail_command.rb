@@ -67,6 +67,7 @@ module Dsc
     def self.define_list_command(command_context)
       super(command_context) do |list_command|
         define_detail_level_flag(list_command)
+        define_time_format_flag(list_command)
       end
     end
 
@@ -84,6 +85,7 @@ module Dsc
     def list_command(options, args)
       fields = parse_fields(options[:fields])
       detail_level = parse_detail_level(options[:detail_level])
+      parse_time_format(options[:time_format])
       output do |output|
         authenticate do |manager|
           hostFilter = DeepSecurity::HostFilter.all_hosts

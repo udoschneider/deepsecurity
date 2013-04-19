@@ -106,7 +106,8 @@ module Dsc
     end
 
     def to_display_string(value)
-      # return "XXX" if value.is_a?(DateTime) # @todo Add Time format
+      return "" if value.blank?
+      return value.strftime($time_format) if (value.is_a?(DateTime) && !$time_format.nil?)
       value.to_s
     end
 
@@ -353,6 +354,24 @@ module Dsc
       command_context.flag [:detail_level],
                            :desc => "A detail level specifiying the extent of data returned. (Available values: #{self.valid_detail_levels_string})",
                            :default_value => "low"
+    end
+
+    # @!endgroup
+
+    # @!group Time format flag
+
+    # Parse detail_level argument
+    # @return [EnumHostDetailLevel] Detail level
+    def parse_time_format(argument)
+      $time_format = argument.nil? ? "" : argument
+    end
+
+    # Define detail_level flag
+    # @return [void]
+    def self.define_time_format_flag(command_context)
+      command_context.flag [:time_format],
+                           :desc => "An strftime() compatible string to use for outputting date/time.",
+                           :default_value => ""
     end
 
     # @!endgroup
