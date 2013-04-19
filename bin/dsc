@@ -27,69 +27,12 @@ program_desc 'DeepSecurity command line client'
 
 version Dsc::VERSION
 
-desc "Enable client debug output. (One of #{Dsc::Command.valid_debug_levels_string})"
-arg_name 'debug'
-flag [:d, :debug]
+Dsc::Command.define_global_flags(self)
+Dsc::Command.define_misc_commands(self)
 
-desc 'Deep Security Manager Host'
-arg_name 'hostname'
-flag [:m, :manager]
+Dsc::HostDetailCommand.define_commands(self)
+Dsc::AntiMalwareEventCommand.define_commands(self)
 
-desc 'Webservice Port'
-arg_name 'port'
-default_value '4119'
-flag [:port]
-
-desc 'Tenat Name'
-arg_name 'tenat'
-default_value ''
-flag [:t, :tenant]
-
-desc 'Username'
-arg_name 'username'
-default_value 'MasterAdmin'
-flag [:u, :username]
-
-desc 'Password'
-arg_name 'password'
-flag [:p, :password]
-
-desc 'Output filename'
-default_value '--'
-flag [:o, :outfile]
-
-desc 'Show progressbar'
-default_value false
-switch [:P]
-
-command_class = Dsc::HostDetailCommand
-desc "Access #{command_class.transport_class_string}s"
-command command_class.command_symbol do |c|
-  command_class.define_list_command(c)
-  command_class.define_schema_command(c)
-end
-
-command_class = Dsc::AntiMalwareEventCommand
-desc "Access #{command_class.transport_class_string}s"
-command command_class.command_symbol do |c|
-  command_class.define_list_command(c)
-  command_class.define_schema_command(c)
-end
-
-desc 'Display API Version'
-command :api_version do |c|
-  c.action do |global_options, options, args|
-    Dsc::Command.new(global_options).print_api_version(options, args)
-  end
-end
-
-desc 'Display Manager time'
-command :manager_time do |c|
-
-  c.action do |global_options, options, args|
-    Dsc::Command.new(global_options).print_manager_time(options, args)
-  end
-end
 
 pre do |global, command, options, args|
   # Pre logic here

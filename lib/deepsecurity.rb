@@ -1,8 +1,6 @@
 # @author Udo Schneider <Udo.Schneider@homeaddress.de>
 
-# require "time"
-# require "cache"
-# require "active_support/core_ext"
+require "logger"
 
 require "json"
 
@@ -10,11 +8,12 @@ require "savon_helper"
 
 require "deepsecurity/version"
 
-require "deepsecurity/ds_object"
 require "deepsecurity/enums"
 
 require "deepsecurity/exceptions/authentication_failed_exception"
 require "deepsecurity/exceptions/authentication_required_exception"
+
+require "deepsecurity/soap_interface"
 
 require "deepsecurity/manager"
 require "deepsecurity/screenscraping"
@@ -43,16 +42,16 @@ require "deepsecurity/transport_objects/private/vulnerability"
 
 module DeepSecurity
 
-  def self.logger
-    if @logger.nil?
-      @logger ||= Logger.new(STDOUT)
-      @logger.level = Logger::INFO
-    end
-    @logger
-  end
-
   def self.dsm
     Manager.current
   end
+
+  LOG_MAPPING = {
+      :debug => Logger::DEBUG,
+      :info => Logger::INFO,
+      :warn => Logger::WARN,
+      :error => Logger::ERROR,
+      :fatal => Logger::FATAL
+  }
 
 end

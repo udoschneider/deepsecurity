@@ -36,7 +36,7 @@ module DeepSecurity
           :includeNonHostEvents => includeNonHostEvents ? "true" : "false"})[:system_events]
       return [] if events.nil?
       events[:item].map do |each|
-        SystemEvent.from_savon_data(each)
+        SystemEvent.convert_from_savon(each)
       end
     end
 

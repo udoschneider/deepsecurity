@@ -28,7 +28,7 @@ module DeepSecurity
     end
 
     # Return a new instance for hosts in the group defined by the given host_group_id.
-    # @param [Integer] host_group_id
+    # @param host_group_id [Integer]
     # @return [HostFilter]
     def self.hosts_in_group(host_group_id)
       instance = self.new()
@@ -38,7 +38,7 @@ module DeepSecurity
     end
 
     # Return a new instance for hosts in the security profile defined by the given security_profile_id.
-    # @param [Integer] security_profile_id
+    # @param security_profile_id [Integer]
     # @return [HostFilter]
     def self.hosts_using_security_profile(security_profile_id)
       instance = self.new()
@@ -48,7 +48,7 @@ module DeepSecurity
     end
 
     # Return a new instance for hosts in the group and their subgroups defined by the given host_group_id.
-    # @param [Integer] host_group_id
+    # @param host_group_id [Integer]
     # @return [HostFilter]
     def self.hosts_in_group_and_all_subgroups(host_group_id)
       instance = self.new()
@@ -58,7 +58,7 @@ module DeepSecurity
     end
 
     # Return a new instance for hosts defined by the given host_id.
-    # @param [Integer] host_id
+    # @param host_id [Integer]
     # @return [HostFilter]
     def self.specific_host(host_id)
       instance = self.new()
