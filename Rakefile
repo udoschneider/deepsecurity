@@ -26,3 +26,8 @@ end
 desc "Run tests"
 task :default => :test
 
+desc "Build index.html for S3 Bucket"
+task :s3_index do
+  system("./generate_s3_links.sh > index.html")
+end
+
