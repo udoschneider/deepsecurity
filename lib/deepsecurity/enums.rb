@@ -497,7 +497,7 @@ module DeepSecurity
       "LAST_24_HOURS" => :last_24_hours,
       "LAST_7_DAYS" => :last_7_days,
       "CUSTOM_RANGE" => :custom_range,
-      "SPECIFIC_TIME" => :specificTime
+      "SPECIFIC_TIME" => :specific_time
   }
 
   # General filter operator enumeration. Used when filtering retrieved events by event ID that are greater than, less
