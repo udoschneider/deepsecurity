@@ -2,7 +2,7 @@
 
 ## CHANGELOG (notable new features or fixes)
 
-### 0.0.21dev
+### 0.0.22
 
 * Use Ruby 1.9.3-p448 on Windows for installer
 * Use "real" InnoSetup in Windows VM
