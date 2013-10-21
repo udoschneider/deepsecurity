@@ -11,7 +11,7 @@ end
 desc "Build Windows Installer"
 task :windows_installer => :build do
   require "dsc"
-  RUBY_INSTALLER_VERSION = "1.9.3-p392"
+  RUBY_INSTALLER_VERSION = "1.9.3-p448"
   GEM_VERSION = Dsc::VERSION.to_s
   system("./windows-installer/iscc windows-installer/dsc.iss /dgemVersion=\"#{GEM_VERSION}\" /drubyVersion=\"#{RUBY_INSTALLER_VERSION}\"")
 end

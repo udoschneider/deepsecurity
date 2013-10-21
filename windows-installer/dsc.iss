@@ -9,7 +9,8 @@
 
 ; #define rubyVersion "1.9.3-p392"
 #define rubyFilename "rubyinstaller-"+rubyVersion+".exe"
-#define rubyUrl = "http://rubyforge.org/frs/download.php/76798/rubyinstaller-"+rubyVersion+".exe"
+#define rubyUrl = "http://dl.bintray.com/oneclick/rubyinstaller/rubyinstaller-"+rubyVersion+".exe?direct"
+
 
 [Setup]
 DefaultDirName={pf}\{#MyAppCompany}\{#MyAppName}
@@ -50,7 +51,7 @@ Name: custom; Description: {cm:customInstallation}; Flags: iscustom
 
 [Components]
 Name: deepsecurity_gem; Description: deepsecurity gem ({#gemVersion}); Types: custom full
-Name: ruby; Description: Ruby ({#rubyVersion}); Types: custom full; ExtraDiskSpaceRequired: 72204063 
+Name: ruby; Description: Ruby ({#rubyVersion}); Types: custom full; ExtraDiskSpaceRequired: 15465768
 
 [Files]
 Source: "isxdl.dll"; Flags: dontcopy
