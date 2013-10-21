@@ -269,11 +269,14 @@ module Dsc
     def parse_fields(fields_string_or_filename_argument)
       filename = File.absolute_path(fields_string_or_filename_argument)
       if File.exists?(filename)
-        fields_string = File.read(filename)
+        fields_string = ""
+        File.readlines(filename).each do |line|
+          fields_string = fields_string + " " + line.strip_comments
+        end
       else
         fields_string = fields_string_or_filename_argument
       end
-      fields = fields_string.split(",").map(&:strip)
+      fields = fields_string.split(/[\s,]/).map(&:strip).reject(&:blank?)
       unknown_fields = fields.reject { |each| self.class.transport_class.has_attribute_chain(each) }
       raise "Unknown filename or field found (#{unknown_fields.join(', ')}) - known fields are: #{self.class.valid_fields.join(', ')}" unless unknown_fields.empty?
       fields
