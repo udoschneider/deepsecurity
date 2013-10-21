@@ -5,6 +5,7 @@
 ### 0.0.21
 
 * Extended `-fields` to accept a filename to read the fields from
+* Added warning for unparseable entries
 
 
 ### 0.0.20

@@ -16,7 +16,7 @@ module SavonHelper
     # @param alias_accessor [Symbol] An Alias for the accessor
     # @return [void]
     def attr_boolean_accessor(accessor, description='', alias_accessor=accessor)
-      create_accessor(accessor, alias_accessor, BooleanMapping.new(description))
+      create_accessor(accessor, alias_accessor, BooleanMapping.new(alias_accessor, description))
     end
 
     # @macro [attach] array_boolean_accessor
@@ -29,7 +29,7 @@ module SavonHelper
     # @param alias_accessor [Symbol] An Alias for the accessor
     # @return [void]
     def array_boolean_accessor(accessor, description='', alias_accessor=accessor)
-      create_accessor(accessor, alias_accessor, ArrayMapping.new(BooleanMapping.new, description))
+      create_accessor(accessor, alias_accessor, ArrayMapping.new(BooleanMapping.new, alias_accessor, description))
     end
 
     # @macro [attach] attr_integer_accessor
@@ -42,7 +42,7 @@ module SavonHelper
     # @param alias_accessor [Symbol] An Alias for the accessor
     # @return [void]
     def attr_integer_accessor(accessor, description='', alias_accessor=accessor)
-      create_accessor(accessor, alias_accessor, IntegerMapping.new(description))
+      create_accessor(accessor, alias_accessor, IntegerMapping.new(alias_accessor, description))
     end
 
     # @macro [attach] array_integer_accessor
@@ -55,7 +55,7 @@ module SavonHelper
     # @param alias_accessor [Symbol] An Alias for the accessor
     # @return [void]
     def array_integer_accessor(accessor, description='', alias_accessor=accessor)
-      create_accessor(accessor, alias_accessor, ArrayMapping.new(IntegerMapping.new, description))
+      create_accessor(accessor, alias_accessor, ArrayMapping.new(IntegerMapping.new(), alias_accessor, description))
     end
 
     # @macro [attach] attr_float_accessor
@@ -68,7 +68,7 @@ module SavonHelper
     # @param alias_accessor [Symbol] An Alias for the accessor
     # @return [void]
     def attr_float_accessor(accessor, description='', alias_accessor=accessor)
-      create_accessor(accessor, alias_accessor, FloatMapping.new(description))
+      create_accessor(accessor, alias_accessor, FloatMapping.new(alias_accessor, description))
     end
 
     # @macro [attach] array_float__accessor
@@ -81,7 +81,7 @@ module SavonHelper
     # @param alias_accessor [Symbol] An Alias for the accessor
     # @return [void]
     def array_float__accessor(accessor, description='', alias_accessor=accessor)
-      create_accessor(accessor, alias_accessor, ArrayMapping.new(FloatMapping.new, description))
+      create_accessor(accessor, alias_accessor, ArrayMapping.new(FloatMapping.new(), alias_accessor, description))
     end
 
     # @macro [attach] attr_double_accessor
@@ -94,7 +94,7 @@ module SavonHelper
     # @param alias_accessor [Symbol] An Alias for the accessor
     # @return [void]
     def attr_double_accessor(accessor, description='', alias_accessor=accessor)
-      create_accessor(accessor, alias_accessor, FloatMapping.new(description))
+      create_accessor(accessor, alias_accessor, FloatMapping.new(alias_accessor, description))
     end
 
     # @macro [attach] array_double__accessor
@@ -107,7 +107,7 @@ module SavonHelper
     # @param alias_accessor [Symbol] An Alias for the accessor
     # @return [void]
     def array_double_accessor(accessor, description='', alias_accessor=accessor)
-      create_accessor(accessor, alias_accessor, ArrayMapping.new(FloatMapping.new, description))
+      create_accessor(accessor, alias_accessor, ArrayMapping.new(FloatMapping.new(), alias_accessor, description))
     end
 
     # @macro [attach] attr_string_accessor
@@ -120,7 +120,7 @@ module SavonHelper
     # @param alias_accessor [Symbol] An Alias for the accessor
     # @return [void]
     def attr_string_accessor(accessor, description='', alias_accessor=accessor)
-      create_accessor(accessor, alias_accessor, StringMapping.new(description))
+      create_accessor(accessor, alias_accessor, StringMapping.new(alias_accessor, description))
     end
 
     # @macro [attach] array_string_accessor
@@ -133,7 +133,7 @@ module SavonHelper
     # @param alias_accessor [Symbol] An Alias for the accessor
     # @return [void]
     def array_string_accessor(accessor, description='', alias_accessor=accessor)
-      create_accessor(accessor, alias_accessor, ArrayMapping.new(StringMapping.new, description))
+      create_accessor(accessor, alias_accessor, ArrayMapping.new(StringMapping.new(), alias_accessor, description))
     end
 
     # @macro [attach] attr_ip_address_accessor
@@ -146,7 +146,7 @@ module SavonHelper
     # @param alias_accessor [Symbol] An Alias for the accessor
     # @return [void]
     def attr_ip_address_accessor(accessor, description='', alias_accessor=accessor)
-      create_accessor(accessor, alias_accessor, IPAddressMapping.new(description))
+      create_accessor(accessor, alias_accessor, IPAddressMapping.new(alias_accessor, description))
     end
 
     # @macro [attach] array_ip_address_accessor
@@ -159,7 +159,7 @@ module SavonHelper
     # @param alias_accessor [Symbol] An Alias for the accessor
     # @return [void]
     def array_ip_address_accessor(accessor, description='', alias_accessor=accessor)
-      create_accessor(accessor, alias_accessor, ArrayMapping.new(IPAddressMapping.new, description))
+      create_accessor(accessor, alias_accessor, ArrayMapping.new(IPAddressMapping.new(), alias_accessor, description))
     end
 
     # @macro [attach] attr_datetime_accessor
@@ -172,7 +172,7 @@ module SavonHelper
     # @param alias_accessor [Symbol] An Alias for the accessor
     # @return [void]
     def attr_datetime_accessor(accessor, description='', alias_accessor=accessor)
-      create_accessor(accessor, alias_accessor, DatetimeMapping.new(description))
+      create_accessor(accessor, alias_accessor, DatetimeMapping.new(alias_accessor, description))
     end
 
     # @macro [attach] array_datetime_accessor
@@ -185,7 +185,7 @@ module SavonHelper
     # @param alias_accessor [Symbol] An Alias for the accessor
     # @return [void]
     def array_datetime_accessor(accessor, description='', alias_accessor=accessor)
-      create_accessor(accessor, alias_accessor, ArrayMapping.new(DatetimeMapping.new, description))
+      create_accessor(accessor, alias_accessor, ArrayMapping.new(DatetimeMapping.new(), alias_accessor, description))
     end
 
     # @macro [attach] attr_enum_accessor
@@ -199,7 +199,7 @@ module SavonHelper
     # @param alias_accessor [Symbol] An Alias for the accessor
     # @return [void]
     def attr_enum_accessor(accessor, enum, description='', alias_accessor=accessor)
-      create_accessor(accessor, alias_accessor, EnumMapping.new(enum, description))
+      create_accessor(accessor, alias_accessor, EnumMapping.new(enum, alias_accessor, description))
     end
 
     # @macro [attach] array_enum_accessor
@@ -213,7 +213,7 @@ module SavonHelper
     # @param alias_accessor [Symbol] An Alias for the accessor
     # @return [void]
     def array_enum_accessor(accessor, enum, description='', alias_accessor=accessor)
-      create_accessor(accessor, alias_accessor, ArrayMapping.new(EnumMapping.new(enum), description))
+      create_accessor(accessor, alias_accessor, ArrayMapping.new(EnumMapping.new(enum), alias_accessor, description))
     end
 
     # @macro [attach] hint_object_accessor
@@ -226,7 +226,7 @@ module SavonHelper
     # @param alias_accessor [Symbol] An Alias for the accessor
     # @return [void]
     def hint_object_accessor(accessor, klass, description='', alias_accessor=accessor)
-      create_accessor(accessor, alias_accessor, HintMapping.new(klass, description))
+      create_accessor(accessor, alias_accessor, HintMapping.new(klass, alias_accessor, description))
     end
 
     # @macro [attach] attr_object_accessor
@@ -240,7 +240,7 @@ module SavonHelper
     # @param alias_accessor [Symbol] An Alias for the accessor
     # @return [void]
     def attr_object_accessor(accessor, klass, description='', alias_accessor=accessor)
-      create_accessor(accessor, alias_accessor, ObjectMapping.new(klass, description))
+      create_accessor(accessor, alias_accessor, ObjectMapping.new(klass, alias_accessor, description))
     end
 
     # @macro [attach] array_object_accessor
@@ -254,7 +254,7 @@ module SavonHelper
     # @param alias_accessor [Symbol] An Alias for the accessor
     # @return [void]
     def array_object_accessor(accessor, klass, description='', alias_accessor=accessor)
-      create_accessor(accessor, alias_accessor, ArrayMapping.new(ObjectMapping.new(klass, description)))
+      create_accessor(accessor, alias_accessor, ArrayMapping.new(ObjectMapping.new(klass, alias_accessor, description)))
     end
 
     private

@@ -8,7 +8,8 @@ module SavonHelper
     # A new instance of TypeMapping with description
     # @param description [String] A String describing the mapping.
     # @return [TypeMapping]
-    def initialize(description='')
+    def initialize(name='', description='')
+      @name = name
       @description = description
     end
 
@@ -48,6 +49,21 @@ module SavonHelper
       raise "#{self.class}##{__method__}() not implemented!"
     end
 
+    # @abstract Return the default value the mapping.
+    # @return [Object]
+    def default_value
+      raise "#{self.class}##{__method__}() not implemented!"
+    end
+
+    # Warn about unparsable mapping
+    # @todo Check if mappings can be derived from klass
+    # @param data [Hash, Object] Source Savon data
+    def warn_unparseable_data(data, interface)
+      message = "Can't parse #{type_string} #{@name.inspect}: #{data.inspect}"
+      interface.logger.warn(message)
+      self.default_value()
+    end
+
   end
 
   # BooleanMapping maps Savon data to Ruby Booleans.
@@ -84,6 +100,12 @@ module SavonHelper
       "bool"
     end
 
+    # @abstract Return the default value the mapping.
+    # @return [Object]
+    def default_value
+      false
+    end
+
   end
 
   # IntegerMapping maps Savon data to Ruby integers.
@@ -118,6 +140,13 @@ module SavonHelper
     def type_string
       "int"
     end
+
+    # @abstract Return the default value the mapping.
+    # @return [Object]
+    def default_value
+      0
+    end
+
   end
 
   # FloatMapping maps Savon data to Ruby floats.
@@ -151,6 +180,12 @@ module SavonHelper
     # @return [String]
     def type_string
       "float"
+    end
+
+    # @abstract Return the default value the mapping.
+    # @return [Object]
+    def default_value
+      0.0
     end
 
   end
@@ -189,6 +224,12 @@ module SavonHelper
       "String"
     end
 
+    # @abstract Return the default value the mapping.
+    # @return [Object]
+    def default_value
+      ""
+    end
+
   end
 
   # IPAddressMapping maps Savon data to Ruby IP Address String.
@@ -199,6 +240,12 @@ module SavonHelper
     # @return [String]
     def type_string
       "IPAddress"
+    end
+
+    # @abstract Return the default value the mapping.
+    # @return [Object]
+    def default_value
+      "255.255.255.255"
     end
 
   end
@@ -236,6 +283,12 @@ module SavonHelper
       "datetime"
     end
 
+    # @abstract Return the default value the mapping.
+    # @return [Object]
+    def default_value
+      DateTime.now()
+    end
+
   end
 
   # EnumMapping maps Savon integers to Ruby symbols.
@@ -244,9 +297,9 @@ module SavonHelper
     # A new instance of EnumMapping with description and enum hash enum.
     # @param enum [Hash{String => Symbol}] Mapping between Savon Strings and Ruby Symbols.
     # @param description [String]
-    # @return [ArrayMapping]
-    def initialize(enum, description='')
-      super(description)
+    # @return [EnumMapping]
+    def initialize(enum, name='', description='')
+      super(name, description)
       @enum = enum
     end
 
@@ -274,6 +327,12 @@ module SavonHelper
       "enum<#{@enum.values.join(', ')}>"
     end
 
+    # @abstract Return the default value the mapping.
+    # @return [Object]
+    def default_value
+      :none
+    end
+
   end
 
   # HintMapping maps Savon data to Ruby objects of type klass (r/o).
@@ -283,8 +342,8 @@ module SavonHelper
     # @param klass [Class] A class returned by the hint accessor
     # @param description [String]
     # @return [HintMapping]
-    def initialize(klass, description='')
-      super(description)
+    def initialize(klass, name='', description='')
+      super(name, description)
       @klass = klass
     end
 
@@ -319,8 +378,8 @@ module SavonHelper
     # @param klass [Class, #to_native] A class which can create instances from Savon data and provide Savon data for export.
     # @param description [String]
     # @return [ObjectMapping]
-    def initialize(klass, description='')
-      super(klass, description)
+    def initialize(klass, name='', description='')
+      super(klass, name, description)
     end
 
     # @!group Converting
@@ -358,7 +417,7 @@ module SavonHelper
           result = to_native(element_mapping, item, interface)
         end
       else
-        raise "Unknown Array mapping"
+        result = warn_unparseable_data(data, interface)
       end
       result
     end
@@ -367,8 +426,8 @@ module SavonHelper
     # @param element_mapping [TypeMapping]  A TypeMapping for elements
     # @param description [String]
     # @return [ArrayMapping]
-    def initialize(element_mapping, description='')
-      super(description)
+    def initialize(element_mapping, name='', description='')
+      super(name, description)
       @element_mapping = element_mapping
     end
 
@@ -393,6 +452,12 @@ module SavonHelper
     # @return [String]
     def type_string
       "Array<#{@element_mapping.type_string}>"
+    end
+
+    # @abstract Return the default value the mapping.
+    # @return [Object]
+    def default_value
+      []
     end
 
   end
