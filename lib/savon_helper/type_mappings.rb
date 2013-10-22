@@ -58,7 +58,7 @@ module SavonHelper
     # Warn about unparsable mapping
     # @todo Check if mappings can be derived from klass
     # @param data [Hash, Object] Source Savon data
-    def warn_unparseable_data(data, interface)
+    def self.warn_unparseable_data(data, interface)
       message = "Can't parse #{type_string} #{@name.inspect}: #{data.inspect}"
       interface.logger.warn(message)
       self.default_value()
