@@ -11,10 +11,9 @@ module DeepSecurity
     # @param hostname [String] host to connect to
     # @param port [Integer] port to connect to
     # @param log_level [LOG_MAPPING] Log Level
-    def self.server(hostname, port=4119, log_level=nil, logger = nil)
-      default_logger = Logger.new(STDOUT)
-      default_logger.level = LOG_MAPPING[log_level] || Logger::INFO
-      self.new(DeepSecurity::SOAPInterface.new(hostname, port, logger || default_logger, log_level))
+    def self.server(hostname, port=4119, log_level=nil, logger = Logger.new(STDERR))
+      logger.level = LOG_MAPPING[log_level] || Logger::INFO
+      self.new(DeepSecurity::SOAPInterface.new(hostname, port, logger, log_level))
     end
 
     # @param interface [DeepSecurity::SOAPInterface] The initialized interface to direct further calls to.

@@ -4,7 +4,11 @@ module SavonHelper
 
   class SOAPInterface
 
-    def initialize(wsdl_url, logger = Logger.new(STDOUT), log_level = nil, options = {})
+    def initialize(wsdl_url, logger = Logger.new(STDERR), log_level = nil, options = {})
+      HTTPI.log = (!log_level.nil?)
+      HTTPI.logger = logger
+      HTTPI.log_level = log_level
+
       @client = Savon.client(options.merge({:wsdl => wsdl_url,
                                             :logger => logger,
                                             :log_level => log_level,

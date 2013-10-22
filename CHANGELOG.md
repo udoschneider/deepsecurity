@@ -2,8 +2,12 @@
 
 ## CHANGELOG (notable new features or fixes)
 
+### 0.0.24
 
-### 0.0.22hf1
+* Send debug logs to STDERR
+* Unparseable Array should work now
+
+### 0.0.23
 
 * Fix call for warn_unparseable_data()
 
