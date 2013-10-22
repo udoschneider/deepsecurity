@@ -404,10 +404,15 @@ module SavonHelper
           result = to_native(element_mapping, item, interface, array_mapping)
         end
       else
-        message = "Can't parse"
-        message = message + " #{array_mapping.type_string} #{array_mapping.name.inspect}" if array_mapping
-        message = message + ": #{data.inspect}"
-        interface.logger.warn(message)
+        begin
+          result << element_mapping.to_native(data, interface)
+        rescue
+          message = "Can't parse"
+          message = message + " #{array_mapping.type_string} #{array_mapping.name.inspect}" if array_mapping
+          message = message + ": #{data.inspect}"
+          interface.logger.warn(message)
+          result = []
+        end
       end
       result
     end
