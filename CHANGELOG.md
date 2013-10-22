@@ -2,6 +2,11 @@
 
 ## CHANGELOG (notable new features or fixes)
 
+
+### 0.0.22hf1
+
+* Fix call for warn_unparseable_data()
+
 ### 0.0.22
 
 * Use Ruby 1.9.3-p448 on Windows for installer
@@ -11,7 +16,6 @@
 
 * Extended `-fields` to accept a filename to read the fields from
 * Added warning for unparseable entries
-
 
 ### 0.0.20
 
