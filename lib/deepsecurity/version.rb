@@ -1,3 +1,3 @@
 module DeepSecurity
-  VERSION = "0.0.22hf1"
+  VERSION = "0.0.23"
 end
