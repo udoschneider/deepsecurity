@@ -5,6 +5,8 @@ module SavonHelper
   # A TypeMapping class is responsible for converting between Savon primitive types and Ruby Types
   class TypeMapping
 
+    attr_reader :name, :description
+
     # A new instance of TypeMapping with description
     # @param description [String] A String describing the mapping.
     # @return [TypeMapping]
@@ -31,12 +33,6 @@ module SavonHelper
 
     # @!endgroup
 
-    # Return the description
-    # @return [String]
-    def description
-      @description
-    end
-
     # @abstract Return the class represented by the mapping.
     # @return [Class]
     def object_klass
@@ -53,15 +49,6 @@ module SavonHelper
     # @return [Object]
     def default_value
       raise "#{self.class}##{__method__}() not implemented!"
-    end
-
-    # Warn about unparsable mapping
-    # @todo Check if mappings can be derived from klass
-    # @param data [Hash, Object] Source Savon data
-    def self.warn_unparseable_data(data, interface)
-      message = "Can't parse #{type_string} #{@name.inspect}: #{data.inspect}"
-      interface.logger.warn(message)
-      self.default_value()
     end
 
   end
@@ -402,9 +389,9 @@ module SavonHelper
     # @param element_mapping [TypeMapping] TypeMapping for elements
     # @param data [Hash,Array] Source Savon Data
     # @return [Array<element_mapping>]
-    def self.to_native(element_mapping, data, interface)
-      return [] if data.blank?
+    def self.to_native(element_mapping, data, interface, array_mapping = nil)
       result = []
+      return result if data.blank?
       if data.is_a?(Array)
         data.each do |element|
           result << element_mapping.to_native(element, interface)
@@ -414,10 +401,13 @@ module SavonHelper
         if item.nil?
           result << element_mapping.to_native(data, interface)
         else
-          result = to_native(element_mapping, item, interface)
+          result = to_native(element_mapping, item, interface, array_mapping)
         end
       else
-        result = warn_unparseable_data(data, interface)
+        message = "Can't parse"
+        message = message + " #{array_mapping.type_string} #{array_mapping.name.inspect}" if array_mapping
+        message = message + ": #{data.inspect}"
+        interface.logger.warn(message)
       end
       result
     end
@@ -437,7 +427,7 @@ module SavonHelper
     # @param data [Hash, Hash] Source Savon data
     # @return [Array<@element_mapping>]
     def to_native(data, interface)
-      self.class.to_native(@element_mapping, data, interface)
+      return self.class.to_native(@element_mapping, data, interface, self)
     end
 
     # @!endgroup
