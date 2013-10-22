@@ -2,6 +2,10 @@
 
 ## CHANGELOG (notable new features or fixes)
 
+### 0.0.25
+
+* Deal with single-element arrays
+
 ### 0.0.24
 
 * Send debug logs to STDERR
